@@ -1,7 +1,7 @@
-[Home](../README.md) | **Tutorial** | [How-to](./how-to.md) | [Reference](./reference.md) |
-[Explanation](./explanation.md)
+[🏠 Home](../README.md) · **🚀 Tutorial** · [🛠️ How-to](./how-to.md) ·
+[📖 Reference](./reference.md) · [💡 Explanation](./explanation.md)
 
-# Getting started
+# 🚀 Getting started
 
 Seed a row, run a migration, prove the row survives. Uses the SQLite adapter (swap in
 `@migration-preflight/adapters-postgres` for Postgres, see
@@ -67,13 +67,13 @@ describe("migration history", () => {
 });
 ```
 
-This catches a migration that doesn't apply at all. It does not yet catch one that applies cleanly
-but silently drops data, for that you need a seed.
+Catches a migration that fails outright, not one that applies cleanly but quietly drops data. That
+needs a seed, next.
 
 ## 4. Seed a row before the risky migration, and check it survives
 
-Plant a `users` row right after `0000_create_users`, then assert the row is still there once every
-later migration, including `0001_add_users_bio`, has run:
+Plant a `users` row right after `0000_create_users`, then assert it's still there once every later
+migration, including `0001_add_users_bio`, has run:
 
 ```ts
 import { MigrationChain, renderInsert } from "migration-preflight";
@@ -99,8 +99,8 @@ it("keeps an existing user's row through 0001_add_users_bio", async () => {
 pnpm exec vitest run preflight.test.ts
 ```
 
-If `0001_add_users_bio` had instead dropped and recreated `users`, `hasRow` would come back `false`
-here, caught in a test instead of in production.
+If `0001_add_users_bio` had dropped and recreated `users` instead, `hasRow` would come back `false`
+here, caught in a test, not in production.
 
 For seeding real Drizzle-typed rows, Postgres extensions, and picking between adapters, see
 [How-to guides](./how-to.md).

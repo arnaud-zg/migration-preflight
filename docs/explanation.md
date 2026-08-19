@@ -1,26 +1,25 @@
-[Home](../README.md) | [Tutorial](./tutorial.md) | [How-to](./how-to.md) |
-[Reference](./reference.md) | **Explanation**
+[🏠 Home](../README.md) · [🚀 Tutorial](./tutorial.md) · [🛠️ How-to](./how-to.md) ·
+[📖 Reference](./reference.md) · **💡 Explanation**
 
-# Explanation
+# 💡 Explanation
 
 ## Why "did it apply" isn't enough
 
 A migration that drops and recreates a table, or renames a column by dropping the old one, applies
 cleanly (no error) while destroying every row that was in it. An empty test database can't catch
-that, there was never any data to lose. The only way to catch it in a test is to seed a row first,
-the way production has rows, and check that row is still correct after the migration runs. Seed,
-migrate, verify, not just migrate.
+that; there was never any data to lose. The only way to catch it is to seed a row first, the way
+production has rows, and check it's still correct after. Seed, migrate, verify, not just migrate.
 
 ## Why three packages, not one
 
-- **The core has zero runtime dependencies.** It knows about the `MigrationSource`,
-  `MigrationDatabase`, and `SqlDialect` ports, nothing about Drizzle, SQLite, or Postgres. A project
-  testing only SQLite never pulls in `@electric-sql/pglite` just because the core package exists.
-- **Each adapter is a separate package** because their runtime footprints differ: the SQLite adapter
-  is zero-dependency (`node:sqlite` is a Node builtin), the Postgres adapter always needs PGlite.
+- **The core has zero runtime dependencies.** It only knows the `MigrationSource`,
+  `MigrationDatabase`, and `SqlDialect` ports, nothing about Drizzle, SQLite, or Postgres. Testing
+  only SQLite never pulls in `@electric-sql/pglite` just because the core exists.
+- **Each adapter is its own package** because their runtime footprints differ: the SQLite adapter is
+  zero-dependency (`node:sqlite` is a Node builtin), the Postgres adapter always needs PGlite.
 - **Within each adapter, the raw driver and the Drizzle-native runner are separate entry points**
-  (`.` vs `./drizzle`) for the same reason at a smaller scale: importing the raw adapter never
-  requires installing `drizzle-orm`, which only the `./drizzle` subpath needs.
+  (`.` vs `./drizzle`) for the same reason at a smaller scale: the raw adapter never requires
+  installing `drizzle-orm`, only `./drizzle` does.
 
 ## Why `MigrationDatabase` operations can be sync or async
 
@@ -30,13 +29,12 @@ a no-op on a value that was never a Promise.
 
 ## Why `foreignKeyViolations` always returns `[]` on Postgres
 
-SQLite offers a genuine deferred check (`PRAGMA foreign_key_check`), so the SQLite adapter's
-`foreignKeyViolations()` returns real rows. Postgres enforces foreign keys immediately, at write
-time, there's no equivalent deferred-check query to run afterward. A violation on Postgres always
-surfaces as a thrown error from whichever `run()`/`transaction()` call caused it. Rather than throw
-on a method the port promises, the Postgres adapter returns `[]`: integrity holds by construction
-once a transaction has committed. Your test still catches the violation, as a thrown error instead
-of a non-empty array.
+SQLite offers a genuine deferred check (`PRAGMA foreign_key_check`), so its `foreignKeyViolations()`
+returns real rows. Postgres enforces foreign keys immediately, at write time, with no equivalent
+deferred-check query to run afterward: a violation always surfaces as a thrown error from whichever
+`run()`/`transaction()` call caused it. Rather than throw on a method the port promises, the
+Postgres adapter returns `[]`, integrity holds by construction once a transaction commits. Your test
+still catches the violation, just as a thrown error instead of a non-empty array.
 
 ## Why the SQLite adapter's pragmas are what they are
 
@@ -56,15 +54,14 @@ package.
 ## Versioning policy
 
 Each package versions independently through [Changesets](https://github.com/changesets/changesets),
-not in lockstep. A Postgres-adapter-only fix doesn't force a version bump on the SQLite adapter or
-the core. `updateInternalDependencies: "patch"` in `.changeset/config.json` means that when the core
-bumps, both adapters (which depend on it via `workspace:*`) get at least a patch bump too, so their
-published dependency range for the core is never left stale.
-`bumpVersionsWithWorkspaceProtocolOnly: true` scopes that auto-bump to `workspace:*` dependencies
-specifically: every internal dependency here already uses that protocol, so this is a no-op today,
-it's there so an internal dependency declared with a plain semver range in the future doesn't get
-silently rewritten too. All three packages start at `0.1.0`: usable but not yet declared stable,
-expect possible breaking changes signaled by a `0.x` minor bump until `1.0.0`.
+not in lockstep: a Postgres-adapter-only fix doesn't force a bump on the SQLite adapter or the core.
+`updateInternalDependencies: "patch"` means a core bump also bumps both adapters (which depend on it
+via `workspace:*`) by at least a patch, so their published dependency range never goes stale.
+`bumpVersionsWithWorkspaceProtocolOnly: true` scopes that auto-bump to `workspace:*` deps
+specifically, a no-op today since every internal dependency already uses that protocol, but it
+guards against a future one declared with a plain semver range getting silently rewritten too. All
+three packages start at `0.1.0`: usable, not yet stable, expect breaking changes signaled by a `0.x`
+minor bump until `1.0.0`.
 
 ## Why release notes are a separate, idempotent script
 
@@ -74,13 +71,12 @@ together instead of hand-written: `scripts/release-notes.mjs` walks every packag
 that doesn't have a release yet, creates one titled after the tag with that package's `## <version>`
 CHANGELOG.md section as its notes.
 
-It's a separate step run after `pnpm release` and `git push --follow-tags`, not folded into either,
-because a git tag isn't a GitHub Release: `gh release create <tag>` needs the tag to already exist
-on the remote, and creating it against a tag that only exists locally would tag the wrong commit
-(the branch tip at release time, not the actual release commit). Checking "does a release already
-exist for this tag" instead of "was this tag just created" also makes the script idempotent:
-re-running it after a partial failure, or once against tags that predate the script entirely, only
-ever fills in what's missing.
+It runs after `pnpm release` and `git push --follow-tags`, not folded into either, because a git tag
+isn't a GitHub Release: `gh release create <tag>` needs the tag to already exist on the remote, and
+creating it against a local-only tag would tag the wrong commit (the branch tip, not the real
+release commit). Checking "does a release already exist" instead of "was this tag just created" also
+makes the script idempotent: re-running it after a partial failure, or once against tags that
+predate the script, only fills in what's missing.
 
 ## Why the tsconfig split (`tsconfig.json` / `.build.json` / `.typecheck.json`)
 

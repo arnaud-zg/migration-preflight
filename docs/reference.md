@@ -1,7 +1,7 @@
-[Home](../README.md) | [Tutorial](./tutorial.md) | [How-to](./how-to.md) | **Reference** |
-[Explanation](./explanation.md)
+[🏠 Home](../README.md) · [🚀 Tutorial](./tutorial.md) · [🛠️ How-to](./how-to.md) · **📖 Reference**
+· [💡 Explanation](./explanation.md)
 
-# Reference
+# 📖 Reference
 
 ## Packages and exports
 
@@ -14,9 +14,8 @@
 | `@migration-preflight/adapters-postgres` | `.`         | `dist/index.js`   | `@electric-sql/pglite`                    |
 | `@migration-preflight/adapters-postgres` | `./drizzle` | `dist/drizzle.js` | `@electric-sql/pglite`, `drizzle-orm`     |
 
-`drizzle-orm` and `better-sqlite3` are optional `peerDependencies` on the adapters. Install them
-yourself at the version your project already uses. Importing the package root never requires them,
-only the `./drizzle` subpath does.
+`drizzle-orm` and `better-sqlite3` are optional peer deps on the adapters, install at whatever
+version your project already uses. Only the `./drizzle` subpath needs them.
 
 ## `migration-preflight` API
 
