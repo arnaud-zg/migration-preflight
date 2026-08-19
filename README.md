@@ -1,10 +1,33 @@
-# migration-preflight
+# 🚀 migration-preflight
 
 <p align="center">
   <img src="assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
 </p>
 
-Test your database migrations before you ship them, not after they've already run on real data.
+<div align="center">
+  <b>Test your database migrations before you ship them, not after they've already run on real data.</b>
+</div>
+
+---
+
+<div align="center">
+
+<!-- Badges -->
+
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+<a href="https://pnpm.io/"><img src="https://img.shields.io/badge/Powered%20by-pnpm%20workspaces-F69220?logo=pnpm&logoColor=white" alt="Powered by pnpm workspaces"></a>
+<img src="https://img.shields.io/badge/ESM-Ready-green" alt="ESM Ready">
+<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript"></a>
+<a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white" alt="Node >=22"></a>
+<img src="https://img.shields.io/badge/core-zero%20deps-brightgreen" alt="Zero runtime deps in the core">
+<br/>
+<a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/v/migration-preflight.svg?label=migration-preflight" alt="migration-preflight npm version"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-sqlite.svg?label=adapters-sqlite" alt="adapters-sqlite npm version"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-postgres.svg?label=adapters-postgres" alt="adapters-postgres npm version"></a>
+
+</div>
+
+---
 
 ## 🐛 The problem
 
