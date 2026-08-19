@@ -141,24 +141,41 @@ CI can still push memory usage high.
 
 ## Release a new version
 
-Releases go through [Changesets](https://github.com/changesets/changesets). On a branch that changes
-a package's public behavior:
+Uses [Changesets](https://github.com/changesets/changesets). Nobody pushes to `main` directly,
+including for version bumps — everything lands through a merged PR.
+
+**1. Add a changeset**, in your normal feature/fix PR:
 
 ```sh
 pnpm changeset
 ```
 
-Pick the affected package(s), a bump type, and write a one-line summary; this becomes the package's
-`CHANGELOG.md` entry. Commit the generated `.changeset/*.md` file with your PR.
+Commit the generated `.changeset/*.md` file and merge the PR as usual.
 
-To cut a release:
+**2. Cut the release PR**, once changesets have piled up on `main`:
 
 ```sh
-pnpm changeset version   # applies pending changesets, updates CHANGELOG.md files
-pnpm install              # refreshes the lockfile after version bumps
-git add -A && git commit -m "chore(release): version packages"
-pnpm release               # build, then changeset publish
+git checkout main && git pull
+git checkout -b release/$(date +%Y-%m-%d)
+pnpm changeset version && pnpm install
+git commit -am "chore(release): version packages"
+git push -u origin HEAD
+gh pr create --title "chore(release): version packages" --fill
 ```
+
+Review the diff (version bumps + `CHANGELOG.md`) and merge it like any other PR.
+
+**3. Publish**, from your machine, after that PR is merged:
+
+```sh
+git checkout main && git pull
+npm login          # if you don't already have a session
+pnpm release        # build, then changeset publish
+git push --follow-tags
+```
+
+One-time setup: **Settings → Branches** → require a PR before merging into `main`, so steps 1 and 2
+are the only way in. (Needs the repo to be public, or GitHub Pro, for a private repo.)
 
 See [Explanation § Versioning policy](./explanation.md#versioning-policy) for why packages version
 independently rather than in lockstep.
