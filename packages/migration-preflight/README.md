@@ -58,36 +58,11 @@ database driver, no ORM dependency.
 
 ## Seeding between migrations
 
-A seed is a row tagged with the migration it goes in right after. Seed files are test fixtures only,
-never imported by production code and never touching a real database.
+A seed is a row tagged with the migration it goes in right after, a test fixture only, never
+imported by production code. `applyThrough` runs it in place after that migration, so you can assert
+the row is still correct once every later migration has run:
 
 ```ts
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite";
-import { MigrationChain, renderInsert } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
-
-type Seed = {
-  readonly after: string; // the migration tag this seed is inserted right after
-  readonly table: string;
-  readonly id: string;
-  readonly sql: string;
-  readonly params: readonly (string | number | null)[];
-};
-
-const userSeed: Seed = {
-  after: "0001_add_users",
-  table: "users",
-  id: "user-1",
-  sql: renderInsert("users", { id: "user-1", email: "a@b.com" }),
-  params: [],
-};
-
-const ALL_SEEDS: readonly Seed[] = [userSeed /* , ...one per row you want to plant */];
-const seedsAfter = (tag: string) => ALL_SEEDS.filter((seed) => seed.after === tag);
-
-const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
-const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
-
 await chain.applyThrough(migrations.at(-1)!.idx, (migration) => seedsAfter(migration.tag));
 
 // Still there after every later migration ran? Then this migration history is safe.
@@ -95,11 +70,8 @@ expect(await chain.hasRow("users", "user-1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-`hasRow`/`getRow` assume the primary key column is `id`, pass a third argument for a table whose PK
-is named something else: `chain.hasRow("order_line_items", "li1", "order_id")`.
-
-`renderInsert` hand-writes the seed SQL for clarity. A fuller setup typically types seeds straight
-off your own Drizzle model instead.
+See [How-to § Seed a row between migrations](../../docs/how-to.md#seed-a-row-between-migrations) for
+the full recipe, including the `Seed` type and the `seedsAfter` helper.
 
 ## Integrating with Drizzle, SQLite, and Postgres
 

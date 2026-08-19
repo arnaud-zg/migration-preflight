@@ -56,9 +56,10 @@ The core has no database driver or ORM dependency. Add only the adapter for what
 
 ## Known issue
 
-Each `@electric-sql/pglite` instance is a full WASM-compiled Postgres, around 700MB+ peak RSS on its
-own. The Postgres adapter's test suite works around this by sharing one instance across all its own
-tests, but a project running many suites that each boot PGlite can still see high memory use in CI.
+Each PGlite instance is a full WASM-compiled Postgres (~700MB+ peak RSS), so a project booting
+several in parallel test files can see high CI memory use. See
+[Explanation](./docs/explanation.md#known-issue-pglite-memory-use-in-tests) for why, and how the
+Postgres adapter's own tests work around it.
 
 ## Documentation
 
