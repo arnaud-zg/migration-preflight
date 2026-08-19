@@ -184,9 +184,14 @@ Review the diff (version bumps + `CHANGELOG.md`) and merge it like any other PR.
 ```sh
 git checkout main
 npm login          # if you don't already have a session
-pnpm release        # build, then changeset publish
+pnpm release        # build, then changeset publish (also tags each bumped package)
 git push --follow-tags
+pnpm release:notes  # create a GitHub Release, per package, from that CHANGELOG.md entry
 ```
+
+`pnpm release:notes` only needs `gh` authenticated; it skips any tag that already has a release, so
+it's safe to re-run. See
+[Explanation § Why release notes are a separate, idempotent script](./explanation.md#why-release-notes-are-a-separate-idempotent-script).
 
 One-time setup: **Settings → Branches** → require a PR before merging into `main`, so steps 1 and 2
 are the only way in. (Needs the repo to be public, or GitHub Pro, for a private repo.)

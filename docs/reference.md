@@ -130,13 +130,15 @@ resolve to.
 
 ## Scripts (for contributors to this repo)
 
-| Script (from repo root)        | Runs                                                                            |
-| ------------------------------ | ------------------------------------------------------------------------------- |
-| `pnpm lint`                    | `eslint .`                                                                      |
-| `pnpm lint:md`                 | `remark . --frail --quiet`                                                      |
-| `pnpm format` / `format:check` | `prettier --write .` / `prettier --check .`                                     |
-| `pnpm typecheck`               | `tsc -p tsconfig.typecheck.json` in every package                               |
-| `pnpm test`                    | `vitest run` in every package, including the Postgres adapter's `test:db`       |
-| `pnpm build`                   | `tsdown` in every package                                                       |
-| `pnpm verify`                  | typecheck, lint, lint:md, format:check, test, build                             |
-| `pnpm changeset`               | records a pending version bump, see [How-to](./how-to.md#release-a-new-version) |
+| Script (from repo root)        | Runs                                                                               |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| `pnpm lint`                    | `eslint .`                                                                         |
+| `pnpm lint:md`                 | `remark . --frail --quiet`                                                         |
+| `pnpm format` / `format:check` | `prettier --write .` / `prettier --check .`                                        |
+| `pnpm typecheck`               | `tsc -p tsconfig.typecheck.json` in every package                                  |
+| `pnpm test`                    | `vitest run` in every package, including the Postgres adapter's `test:db`          |
+| `pnpm build`                   | `tsdown` in every package                                                          |
+| `pnpm verify`                  | typecheck, lint, lint:md, format:check, test, build                                |
+| `pnpm changeset`               | records a pending version bump, see [How-to](./how-to.md#release-a-new-version)    |
+| `pnpm release`                 | `pnpm build && changeset publish`, see [How-to](./how-to.md#release-a-new-version) |
+| `pnpm release:notes`           | `node scripts/release-notes.mjs`, see [How-to](./how-to.md#release-a-new-version)  |
