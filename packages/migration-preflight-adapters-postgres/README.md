@@ -1,5 +1,9 @@
 # @migration-preflight/adapters-postgres
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arnaud-zg/migration-preflight/main/assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
+</p>
+
 The Postgres driver for [`migration-preflight`](../migration-preflight). A migration that silently
 drops or corrupts data usually only fails once it meets real data, and by then it already ran. This
 package is what lets that test run against Postgres.
