@@ -78,6 +78,11 @@ web_modules/
 .next
 out
 
+# Not a Next.js build dir: this is a Drizzle-style migrations fixture, deliberately named "out"
+# to match drizzle-kit's real output directory convention.
+!packages/migration-preflight/src/sources/__tests__/fixtures/out/
+!packages/migration-preflight/src/sources/__tests__/fixtures/out/**
+
 # Nuxt.js build / generate output
 .nuxt
 dist
