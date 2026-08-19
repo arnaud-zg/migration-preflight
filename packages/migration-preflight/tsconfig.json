@@ -1,0 +1,18 @@
+{
+  /**
+   * Migration Preflight Package Configuration
+   *
+   * Dialect-agnostic core for replaying and testing SQL migrations. This is the
+   * editor/lint-facing project (see eslint.config.mjs); it extends the plain
+   * base tsconfig, not internal-package.json, since it never emits declarations
+   * itself, that's tsconfig.build.json's job. No DB-driver dependency, see
+   * @migration-preflight/adapters-sqlite and @migration-preflight/adapters-postgres
+   * for concrete drivers.
+   */
+  "files": [],
+  "include": ["src/**/*.ts", "*.config.ts"],
+  "extends": ["@arnaud-zg/configs/tsconfig/base.json"],
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}
