@@ -1,0 +1,43 @@
+{
+  "name": "migration-preflight-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "clean": "pnpm -r run clean",
+    "format": "prettier --write . --cache --cache-location .cache/.prettiercache",
+    "format:check": "prettier --check . --cache --cache-location .cache/.prettiercache",
+    "lint": "eslint . --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "eslint . --fix --cache --cache-location .cache/.eslintcache",
+    "lint:md": "remark . --frail --quiet",
+    "prepare": "lefthook install",
+    "test": "pnpm -r run test",
+    "typecheck": "pnpm -r run typecheck",
+    "verify": "pnpm typecheck && pnpm lint && pnpm lint:md && pnpm format:check && pnpm test && pnpm build"
+  },
+  "prettier": "@arnaud-zg/configs/prettier",
+  "devDependencies": {
+    "@arnaud-zg/configs": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@eslint/js": "catalog:",
+    "@ianvs/prettier-plugin-sort-imports": "catalog:",
+    "@types/node": "catalog:node",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "lefthook": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-packagejson": "catalog:",
+    "remark-cli": "catalog:",
+    "remark-preset-lint-recommended": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10.10.0"
+  }
+}
