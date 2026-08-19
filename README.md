@@ -79,6 +79,8 @@ See the [Tutorial](./docs/tutorial.md) to add the seed step and prove it survive
 | [`@migration-preflight/adapters-postgres`](./packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
 
 No database driver or ORM dependency in the core. Add only the adapter you actually test against.
+Ships with a Drizzle source; Prisma and anything else plug in through a custom `MigrationSource`,
+see [How-to § Use with Prisma](./docs/how-to.md#use-with-prisma).
 
 ## 📚 Documentation
 
