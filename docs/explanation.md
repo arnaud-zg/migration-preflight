@@ -1,0 +1,82 @@
+[Home](../README.md) | [Tutorial](./tutorial.md) | [How-to](./how-to.md) |
+[Reference](./reference.md) | **Explanation**
+
+# Explanation
+
+## Why "did it apply" isn't enough
+
+A migration that drops and recreates a table, or renames a column by dropping the old one, applies
+cleanly (no error) while destroying every row that was in it. An empty test database can't catch
+that, there was never any data to lose. The only way to catch it in a test is to seed a row first,
+the way production has rows, and check that row is still correct after the migration runs. Seed,
+migrate, verify, not just migrate.
+
+## Why three packages, not one
+
+- **The core has zero runtime dependencies.** It knows about the `MigrationSource`,
+  `MigrationDatabase`, and `SqlDialect` ports, nothing about Drizzle, SQLite, or Postgres. A project
+  testing only SQLite never pulls in `@electric-sql/pglite` just because the core package exists.
+- **Each adapter is a separate package** because their runtime footprints differ: the SQLite adapter
+  is zero-dependency (`node:sqlite` is a Node builtin), the Postgres adapter always needs PGlite.
+- **Within each adapter, the raw driver and the Drizzle-native runner are separate entry points**
+  (`.` vs `./drizzle`) for the same reason at a smaller scale: importing the raw adapter never
+  requires installing `drizzle-orm`, which only the `./drizzle` subpath needs.
+
+## Why `MigrationDatabase` operations can be sync or async
+
+`node:sqlite` is synchronous; PGlite is async-only. `MigrationChain` drives both without an
+adapter-specific branch: every port method returns `T | Promise<T>`, and the chain always `await`s,
+a no-op on a value that was never a Promise.
+
+## Why `foreignKeyViolations` always returns `[]` on Postgres
+
+SQLite offers a genuine deferred check (`PRAGMA foreign_key_check`), so the SQLite adapter's
+`foreignKeyViolations()` returns real rows. Postgres enforces foreign keys immediately, at write
+time, there's no equivalent deferred-check query to run afterward. A violation on Postgres always
+surfaces as a thrown error from whichever `run()`/`transaction()` call caused it. Rather than throw
+on a method the port promises, the Postgres adapter returns `[]`: integrity holds by construction
+once a transaction has committed. Your test still catches the violation, as a thrown error instead
+of a non-empty array.
+
+## Why the SQLite adapter's pragmas are what they are
+
+`createNodeSqliteMigrationDatabase` enables `enableForeignKeyConstraints` and
+`enableDoubleQuotedStringLiterals`. These match how a mobile app's on-device SQLite driver (e.g.
+Expo's `expo-sqlite`) commonly runs, so a migration that passes this test behaves the same way once
+it reaches a device.
+
+## Why every package builds through tsdown
+
+`dist/` isn't checked in. Each `tsdown.config.ts` calls `@arnaud-zg/configs`'s
+`defineLibraryConfig`, builds to ESM, emits `.d.ts`, and regenerates `package.json`'s
+`exports`/`main`/`module`/`types` fields from the `entry` map, so that map never drifts out of sync
+with `dist/`. `prepublishOnly` runs the build automatically before `npm publish` ever sees the
+package.
+
+## Versioning policy
+
+Each package versions independently through [Changesets](https://github.com/changesets/changesets),
+not in lockstep. A Postgres-adapter-only fix doesn't force a version bump on the SQLite adapter or
+the core. `updateInternalDependencies: "patch"` in `.changeset/config.json` means that when the core
+bumps, both adapters (which depend on it via `workspace:*`) get at least a patch bump too, so their
+published dependency range for the core is never left stale. All three packages start at `0.1.0`:
+usable but not yet declared stable, expect possible breaking changes signaled by a `0.x` minor bump
+until `1.0.0`.
+
+## Why the tsconfig split (`tsconfig.json` / `.build.json` / `.typecheck.json`)
+
+- **`tsconfig.json`**: what editors and ESLint's typed linting resolve. Extends
+  `@arnaud-zg/configs/tsconfig/internal-package.json`.
+- **`tsconfig.build.json`**: what `tsdown` compiles with. Isolated from the monorepo-wide settings
+  above because tsdown's isolated-declarations `.d.ts` build needs a leaner, self-contained config.
+- **`tsconfig.typecheck.json`**: what `pnpm typecheck` runs. Excludes `*.spec.ts` / `*.test.ts`;
+  those get type checking from ESLint's typed-linting pass instead, so nothing goes unchecked but
+  each config has one job.
+
+## Known issue: PGlite memory use in tests
+
+Each `@electric-sql/pglite` instance is a full WASM-compiled Postgres, roughly 700MB+ peak RSS on
+its own. The Postgres adapter's own test suite shares one instance across all its tests
+(`isolate: false`, `fileParallelism: false` in its `vitest.config.ts`) to pay that cost once, but a
+consuming project that boots several PGlite instances across parallel test files can still see high
+memory use, particularly in CI with limited memory per runner.
