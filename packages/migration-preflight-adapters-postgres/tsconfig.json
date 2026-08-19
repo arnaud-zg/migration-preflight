@@ -1,0 +1,22 @@
+{
+  /**
+   * Migration Preflight Postgres Package Configuration
+   *
+   * PGlite (in-memory WASM Postgres) adapter for migration-preflight, plus an
+   * optional drizzle-native runner (behind the "./drizzle" subpath so the raw
+   * adapter never requires drizzle-orm to be installed).
+   *
+   * This is the editor/lint-facing project (see eslint.config.mjs); it extends
+   * the plain base tsconfig, not internal-package.json, since it never emits
+   * declarations itself, that's tsconfig.build.json's job.
+   */
+  "files": [],
+  "include": ["src/**/*.ts", "*.config.ts"],
+  "extends": ["@arnaud-zg/configs/tsconfig/base.json"],
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "migration-preflight": ["../migration-preflight/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "name": "@migration-preflight/adapters-postgres",
+  "version": "0.1.0",
+  "description": "PGlite (in-memory WASM Postgres) driver for migration-preflight: test your Postgres migrations with no Docker, no external server.",
+  "keywords": [
+    "migration",
+    "database",
+    "postgres",
+    "postgresql",
+    "pglite",
+    "testing",
+    "preflight",
+    "drizzle",
+    "data-safety"
+  ],
+  "homepage": "https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-postgres#readme",
+  "bugs": {
+    "url": "https://github.com/arnaud-zg/migration-preflight/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnaud-zg/migration-preflight.git",
+    "directory": "packages/migration-preflight-adapters-postgres"
+  },
+  "license": "MIT",
+  "author": "Arnaud Zheng <arnaud.zg@gmail.com>",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./drizzle": "./dist/drizzle.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "git clean -xdf .cache dist node_modules",
+    "format": "prettier --write . --ignore-path ../../.prettierignore --cache --cache-location .cache/.prettiercache",
+    "lint": "eslint --cache --cache-location .cache/.eslintcache",
+    "prepublishOnly": "pnpm run build",
+    "test:db": "vitest run",
+    "typecheck": "tsc -p tsconfig.typecheck.json"
+  },
+  "prettier": "@arnaud-zg/configs/prettier",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.4",
+    "migration-preflight": "workspace:*"
+  },
+  "devDependencies": {
+    "@arnaud-zg/configs": "catalog:",
+    "@types/node": "catalog:node",
+    "drizzle-orm": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "0.45.2"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
