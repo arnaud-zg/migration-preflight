@@ -1,7 +1,7 @@
-[Home](../README.md) | [Tutorial](./tutorial.md) | **How-to** | [Reference](./reference.md) |
-[Explanation](./explanation.md)
+[🏠 Home](../README.md) · [🚀 Tutorial](./tutorial.md) · **🛠️ How-to** ·
+[📖 Reference](./reference.md) · [💡 Explanation](./explanation.md)
 
-# How-to guides
+# 🛠️ How-to guides
 
 ## Pick an adapter
 
@@ -14,8 +14,8 @@ Both are dev dependencies. Install only the one matching your database.
 
 ## Seed a row between migrations
 
-A seed is a row tagged with the migration it goes in right after. Seed files are test fixtures only,
-never imported by production code and never touching a real database.
+A seed is a row tagged with the migration it goes in right after, a test fixture only, never
+imported by production code.
 
 ```ts
 import { MigrationChain, renderInsert } from "migration-preflight";
@@ -149,10 +149,8 @@ including for version bumps: everything lands through a merged PR.
 pnpm changeset
 ```
 
-Changesets are added per-PR, not at release time. Each merged PR documents its own change as it
-lands, and those files just pile up on `main`; cutting a release is a separate decision you make
-later, in step 2, independent of when any one PR merges. Commit the generated `.changeset/*.md` file
-and merge the PR as usual.
+Each merged PR carries its own changeset; they pile up on `main` until step 2 cuts a release. Commit
+the generated `.changeset/*.md` file and merge the PR as usual.
 
 **2. Cut the release PR, once changesets have piled up on `main`**
 
@@ -189,9 +187,10 @@ git push --follow-tags
 pnpm release:notes  # create a GitHub Release, per package, from that CHANGELOG.md entry
 ```
 
-`pnpm release:notes` only needs `gh` authenticated; it skips any tag that already has a release, so
-it's safe to re-run. See
-[Explanation § Why release notes are a separate, idempotent script](./explanation.md#why-release-notes-are-a-separate-idempotent-script).
+`pnpm release:notes` needs `gh` authenticated and is safe to re-run: it skips any tag that already
+has a release. See
+[Explanation § Why release notes are a separate, idempotent script](./explanation.md#why-release-notes-are-a-separate-idempotent-script)
+for why.
 
 One-time setup: **Settings → Branches** → require a PR before merging into `main`, so steps 1 and 2
 are the only way in. (Needs the repo to be public, or GitHub Pro, for a private repo.)

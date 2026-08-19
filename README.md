@@ -2,17 +2,16 @@
 
 Test your database migrations before you ship them, not after they've already run on real data.
 
-## The problem
+## 🐛 The problem
 
-A migration can look fine and still destroy data: dropping and recreating a table, renaming a
-column, changing a type. None of that shows up against an empty local database. The same migration
-can silently wipe real rows the moment it runs against a database that actually has data in it, and
-by the time you find out, it already ran.
+A migration can drop and recreate a table, or rename a column by dropping the old one. It applies
+cleanly, no error, and still destroys every row that was in it. An empty local database never
+catches that: there's nothing in it to lose.
 
-## The idea
+## 🌱 The idea
 
-Plant a row before the migration, run it, and check the row is still there and still correct after.
-That's the difference between "it didn't crash" and "my data is safe."
+Plant a row before the migration, run it, and check the row survived. That's the difference between
+"it didn't crash" and "my data is safe."
 
 ```mermaid
 flowchart LR
@@ -22,10 +21,10 @@ flowchart LR
     Check -->|Yes| Safe[✅ safe to ship]
 ```
 
-One test run replays your entire migration history and tells you exactly which step, if any, would
-have broken something.
+One test run replays your migration history and tells you exactly which step, if any, would have
+broken something.
 
-## Quick start
+## ⚡ Quick start
 
 ```sh
 pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
@@ -42,9 +41,9 @@ const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations
 await chain.applyThrough(migrations.at(-1)!.idx, () => []);
 ```
 
-See the [Tutorial](./docs/tutorial.md) for seeding a row and proving it survives a migration.
+See the [Tutorial](./docs/tutorial.md) to add the seed step and prove it survives a migration.
 
-## Packages
+## 📦 Packages
 
 | Package                                                                                      | What it's for                 |
 | -------------------------------------------------------------------------------------------- | ----------------------------- |
@@ -52,23 +51,16 @@ See the [Tutorial](./docs/tutorial.md) for seeding a row and proving it survives
 | [`@migration-preflight/adapters-sqlite`](./packages/migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
 | [`@migration-preflight/adapters-postgres`](./packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
 
-The core has no database driver or ORM dependency. Add only the adapter for what you actually test.
+No database driver or ORM dependency in the core. Add only the adapter you actually test against.
 
-## Known issue
+## 📚 Documentation
 
-Each PGlite instance is a full WASM-compiled Postgres (~700MB+ peak RSS), so a project booting
-several in parallel test files can see high CI memory use. See
-[Explanation](./docs/explanation.md#known-issue-pglite-memory-use-in-tests) for why, and how the
-Postgres adapter's own tests work around it.
+- 🚀 **[Tutorial](./docs/tutorial.md)**: seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](./docs/how-to.md)**: task recipes.
+- 📖 **[Reference](./docs/reference.md)**: API and package layout.
+- 💡 **[Explanation](./docs/explanation.md)**: design rationale.
 
-## Documentation
-
-- [Tutorial](./docs/tutorial.md): seed a row, run a migration, prove it survives.
-- [How-to guides](./docs/how-to.md): task recipes.
-- [Reference](./docs/reference.md): API and package layout.
-- [Explanation](./docs/explanation.md): design rationale.
-
-## Contributing
+## 🤝 Contributing
 
 ```sh
 pnpm install
