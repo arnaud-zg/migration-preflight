@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r run build",
+    "changeset": "changeset",
     "clean": "pnpm -r run clean",
     "format": "prettier --write . --cache --cache-location .cache/.prettiercache",
     "format:check": "prettier --check . --cache --cache-location .cache/.prettiercache",
@@ -11,13 +12,17 @@
     "lint:fix": "eslint . --fix --cache --cache-location .cache/.eslintcache",
     "lint:md": "remark . --frail --quiet",
     "prepare": "lefthook install",
+    "release": "pnpm build && changeset publish",
     "test": "pnpm -r run test && pnpm --filter @migration-preflight/adapters-postgres run test:db",
     "typecheck": "pnpm -r run typecheck",
-    "verify": "pnpm typecheck && pnpm lint && pnpm lint:md && pnpm format:check && pnpm test && pnpm build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm lint:md && pnpm format:check && pnpm test && pnpm build",
+    "version": "changeset version"
   },
   "prettier": "@arnaud-zg/configs/prettier",
   "devDependencies": {
     "@arnaud-zg/configs": "catalog:",
+    "@changesets/changelog-github": "^1.0.0",
+    "@changesets/cli": "^3.0.1",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
     "@eslint/js": "catalog:",
