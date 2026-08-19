@@ -3,9 +3,10 @@
 
 # 🚀 Getting started
 
-Seed a row, run a migration, prove the row survives. Uses the SQLite adapter (swap in
-`@migration-preflight/adapters-postgres` for Postgres, see
-[How-to § Pick an adapter](./how-to.md#pick-an-adapter)).
+Seed a row, run a migration, prove the row survives. Uses the SQLite adapter and Drizzle's migration
+format: swap in `@migration-preflight/adapters-postgres` for Postgres (see
+[How-to § Pick an adapter](./how-to.md#pick-an-adapter)), or Prisma's format instead of Drizzle's
+(see [How-to § Use with Prisma](./how-to.md#use-with-prisma)).
 
 ## 1. Install
 

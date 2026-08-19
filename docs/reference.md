@@ -84,6 +84,9 @@ Every operation may be sync or async, so one `MigrationChain` drives both a sync
 | `loadMigrationsFromDisk(outDir)` | `(outDir: string) => Migration[]`, same, named directly |
 | `MigrationSource` (type)         | `(migrationsDir: string) => readonly Migration[]`       |
 
+Prisma, or any other migration tool, isn't a bundled export: write your own `MigrationSource`
+instead of `drizzleFileSource`, see [How-to § Use with Prisma](./how-to.md#use-with-prisma).
+
 ## `@migration-preflight/adapters-sqlite` API
 
 | Export                                                         | From        |

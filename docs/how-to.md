@@ -105,11 +105,43 @@ supplied yourself.
 
 See [Explanation](./explanation.md#why-foreignkeyviolations-always-returns--on-postgres) for why.
 
+## Use with Prisma
+
+Prisma has no bundled `MigrationSource`, its format doesn't need one: each migration is a
+`<timestamp>_<name>/migration.sql` folder under `prisma/migrations`, and folder names already sort
+into the right order as plain strings, no journal file to parse.
+
+```ts
+// prismaFileSource.ts
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Migration, MigrationSource } from "migration-preflight/sources";
+
+export const prismaFileSource: MigrationSource = (migrationsDir) =>
+  readdirSync(migrationsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort()
+    .map((tag, idx): Migration => ({
+      idx,
+      tag,
+      sql: readFileSync(join(migrationsDir, tag, "migration.sql"), "utf8"),
+    }));
+```
+
+```ts
+const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
+const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
+```
+
+From here every other recipe in this guide, seeding, the smoke test, foreign key assertions, works
+unchanged: they all operate on `migrations`/`chain`, not on how those migrations were read.
+
 ## Add a custom `MigrationSource`
 
 The core package only depends on the `MigrationSource` port
-(`(migrationsDir: string) => readonly Migration[]`). Write your own for a different migration format
-(e.g. Prisma's `migrations/` directory):
+(`(migrationsDir: string) => readonly Migration[]`). Write your own for any other migration format
+(Knex, TypeORM, a raw SQL folder), the same way `prismaFileSource` does above:
 
 ```ts
 import type { Migration, MigrationSource } from "migration-preflight/sources";
