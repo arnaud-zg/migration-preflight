@@ -1,5 +1,9 @@
 # migration-preflight
 
+<p align="center">
+  <img src="assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
+</p>
+
 Test your database migrations before you ship them, not after they've already run on real data.
 
 ## 🐛 The problem
