@@ -63,6 +63,22 @@ published dependency range for the core is never left stale. All three packages 
 usable but not yet declared stable, expect possible breaking changes signaled by a `0.x` minor bump
 until `1.0.0`.
 
+## Why release notes are a separate, idempotent script
+
+`changeset publish` already creates a `<package>@<version>` git tag per bumped package, and
+per-package `CHANGELOG.md` is already generated, so a GitHub Release is just those two facts glued
+together instead of hand-written: `scripts/release-notes.mjs` walks every package, and for any tag
+that doesn't have a release yet, creates one titled after the tag with that package's `## <version>`
+CHANGELOG.md section as its notes.
+
+It's a separate step run after `pnpm release` and `git push --follow-tags`, not folded into either,
+because a git tag isn't a GitHub Release: `gh release create <tag>` needs the tag to already exist
+on the remote, and creating it against a tag that only exists locally would tag the wrong commit
+(the branch tip at release time, not the actual release commit). Checking "does a release already
+exist for this tag" instead of "was this tag just created" also makes the script idempotent:
+re-running it after a partial failure, or once against tags that predate the script entirely, only
+ever fills in what's missing.
+
 ## Why the tsconfig split (`tsconfig.json` / `.build.json` / `.typecheck.json`)
 
 - **`tsconfig.json`**: what editors and ESLint's typed linting resolve. Extends
