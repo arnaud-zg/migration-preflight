@@ -134,28 +134,30 @@ pnpm --filter @migration-preflight/adapters-sqlite test
 pnpm --filter @migration-preflight/adapters-postgres test:db
 ```
 
-Known issue: each PGlite instance used by the Postgres adapter's tests is a full WASM-compiled
-Postgres (~700MB+ peak RSS). Its `vitest.config.ts` disables test isolation and file parallelism so
-the whole suite pays that cost once instead of per file; running it alongside other heavy suites in
-CI can still push memory usage high.
+Known issue: running the Postgres adapter's tests alongside other heavy suites can still push CI
+memory usage high, see [Explanation](./explanation.md#known-issue-pglite-memory-use-in-tests) for
+why.
 
 ## Release a new version
 
 Uses [Changesets](https://github.com/changesets/changesets). Nobody pushes to `main` directly,
-including for version bumps — everything lands through a merged PR.
+including for version bumps: everything lands through a merged PR.
 
-**1. Add a changeset**, in your normal feature/fix PR:
+**1. Add a changeset, in your feature/fix PR**
 
 ```sh
 pnpm changeset
 ```
 
-Commit the generated `.changeset/*.md` file and merge the PR as usual.
+Changesets are added per-PR, not at release time. Each merged PR documents its own change as it
+lands, and those files just pile up on `main`; cutting a release is a separate decision you make
+later, in step 2, independent of when any one PR merges. Commit the generated `.changeset/*.md` file
+and merge the PR as usual.
 
-**2. Cut the release PR**, once changesets have piled up on `main`:
+**2. Cut the release PR, once changesets have piled up on `main`**
 
 ```sh
-git checkout main && git pull
+git checkout main
 git checkout -b release/$(date +%Y-%m-%d)
 pnpm changeset version && pnpm install
 git commit -am "chore(release): version packages"
@@ -163,12 +165,24 @@ git push -u origin HEAD
 gh pr create --title "chore(release): version packages" --fill
 ```
 
+Copy this into the PR description, filling in the version column from the `package.json` diffs:
+
+```markdown
+## Releases
+
+| Package                                  | Version |
+| ---------------------------------------- | ------- |
+| `migration-preflight`                    | 0.0.0   |
+| `@migration-preflight/adapters-sqlite`   | 0.0.0   |
+| `@migration-preflight/adapters-postgres` | 0.0.0   |
+```
+
 Review the diff (version bumps + `CHANGELOG.md`) and merge it like any other PR.
 
-**3. Publish**, from your machine, after that PR is merged:
+**3. Publish, from your machine, after that PR is merged**
 
 ```sh
-git checkout main && git pull
+git checkout main
 npm login          # if you don't already have a session
 pnpm release        # build, then changeset publish
 git push --follow-tags
