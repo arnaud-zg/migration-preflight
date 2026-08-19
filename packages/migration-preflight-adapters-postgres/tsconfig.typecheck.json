@@ -1,0 +1,15 @@
+{
+  "extends": ["@arnaud-zg/configs/tsconfig/base.json"],
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "checkJs": false,
+    "lib": ["ES2022", "dom"],
+    "types": ["node"],
+    "paths": {
+      "migration-preflight": ["../migration-preflight/src"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "vitest.config.ts"]
+}
