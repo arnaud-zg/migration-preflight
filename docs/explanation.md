@@ -59,9 +59,12 @@ Each package versions independently through [Changesets](https://github.com/chan
 not in lockstep. A Postgres-adapter-only fix doesn't force a version bump on the SQLite adapter or
 the core. `updateInternalDependencies: "patch"` in `.changeset/config.json` means that when the core
 bumps, both adapters (which depend on it via `workspace:*`) get at least a patch bump too, so their
-published dependency range for the core is never left stale. All three packages start at `0.1.0`:
-usable but not yet declared stable, expect possible breaking changes signaled by a `0.x` minor bump
-until `1.0.0`.
+published dependency range for the core is never left stale.
+`bumpVersionsWithWorkspaceProtocolOnly: true` scopes that auto-bump to `workspace:*` dependencies
+specifically: every internal dependency here already uses that protocol, so this is a no-op today,
+it's there so an internal dependency declared with a plain semver range in the future doesn't get
+silently rewritten too. All three packages start at `0.1.0`: usable but not yet declared stable,
+expect possible breaking changes signaled by a `0.x` minor bump until `1.0.0`.
 
 ## Why release notes are a separate, idempotent script
 
