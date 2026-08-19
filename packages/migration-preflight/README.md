@@ -1,10 +1,29 @@
-# migration-preflight
+# 🚀 migration-preflight
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arnaud-zg/migration-preflight/main/assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
 </p>
 
-Test your database migrations before you ship them, not after they've already run on real data.
+<div align="center">
+  <b>Test your database migrations before you ship them, not after they've already run on real data.</b>
+</div>
+
+---
+
+<div align="center">
+
+<!-- Badges -->
+
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript"></a>
+<a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white" alt="Node >=22"></a>
+<img src="https://img.shields.io/badge/core-zero%20deps-brightgreen" alt="Zero runtime deps"> <br/>
+<a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/v/migration-preflight.svg" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/dw/migration-preflight" alt="npm weekly downloads"></a>
+
+</div>
+
+---
 
 ## The problem
 
