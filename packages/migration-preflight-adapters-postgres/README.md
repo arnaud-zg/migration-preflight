@@ -20,7 +20,7 @@
 <img src="https://img.shields.io/badge/PGlite-no%20Docker-336791" alt="Backed by PGlite, no Docker needed">
 <br/>
 <a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-postgres.svg" alt="npm version"></a>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/dw/@migration-preflight/adapters-postgres" alt="npm weekly downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-postgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-postgres.svg" alt="npm downloads"></a>
 
 </div>
 
