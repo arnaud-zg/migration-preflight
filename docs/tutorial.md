@@ -64,9 +64,7 @@ const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 <details>
 <summary><b>Prisma</b> (also bundled)</summary>
 
-`prismaFileSource` reads a Prisma `prisma/migrations/` directory: each
-`<timestamp>_<name>/migration.sql` folder already sorts into the right order as a plain string, no
-journal file to parse:
+`prismaFileSource` reads a Prisma `prisma/migrations/` directory, no journal file needed:
 
 ```
 prisma/migrations/
