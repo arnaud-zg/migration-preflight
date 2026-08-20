@@ -68,7 +68,7 @@ await chain.applyThrough(migrations.at(-1)!.idx, () => []);
 The payoff, catching a migration that silently drops data, comes from seeding a row between two
 migrations. See [Seeding between migrations](#seeding-between-migrations) below.
 
-## Packages
+## 📦 Packages
 
 This package is the dialect-agnostic core: the replay engine and the ports it runs against. No
 database driver, no ORM dependency.
@@ -78,6 +78,8 @@ database driver, no ORM dependency.
 | `migration-preflight`                                                                | Core: replay engine, ports    |
 | [`@migration-preflight/adapters-sqlite`](../migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
 | [`@migration-preflight/adapters-postgres`](../migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+
+_`migration-preflight` isn't linked above: that's this package._
 
 ## Seeding between migrations
 
@@ -107,7 +109,12 @@ ports. Concrete support comes from two other packages:
   supply a `MigrationDatabase` and, behind a `/drizzle` subpath, a thin wrapper over Drizzle's own
   migrator for a quick "does it apply cleanly" check.
 
-See the [full documentation](../../docs/) for a tutorial, more recipes, and the API reference.
+## 📚 Documentation
+
+- 🚀 **[Tutorial](../../docs/tutorial.md)**: seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](../../docs/how-to.md)**: task recipes.
+- 📖 **[Reference](../../docs/reference.md)**: API and package layout.
+- 💡 **[Explanation](../../docs/explanation.md)**: design rationale.
 
 ## Contributing
 

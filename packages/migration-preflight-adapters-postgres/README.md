@@ -96,7 +96,22 @@ Each PGlite instance is a full WASM-compiled Postgres, roughly 700MB+ peak RSS o
 [Explanation](../../docs/explanation.md#known-issue-pglite-memory-use-in-tests) for why, and how
 this package's own test suite works around it.
 
-See the [full documentation](../../docs/) for a tutorial, more recipes, and the API reference.
+## 📦 Packages
+
+| Package                                                                          | What it's for                 |
+| -------------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](../migration-preflight)                                  | Core: replay engine, ports    |
+| [`@migration-preflight/adapters-sqlite`](../migration-preflight-adapters-sqlite) | SQLite driver (`node:sqlite`) |
+| `@migration-preflight/adapters-postgres`                                         | Postgres driver (PGlite)      |
+
+_`@migration-preflight/adapters-postgres` isn't linked above: that's this package._
+
+## 📚 Documentation
+
+- 🚀 **[Tutorial](../../docs/tutorial.md)**: seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](../../docs/how-to.md)**: task recipes.
+- 📖 **[Reference](../../docs/reference.md)**: API and package layout.
+- 💡 **[Explanation](../../docs/explanation.md)**: design rationale.
 
 ## Contributing
 

@@ -76,7 +76,22 @@ await chain.applyThrough(migrations.at(-1)!.idx, () => []);
 
 No emulator, no device, no Docker, this runs in plain Node, as fast as any other test.
 
-See the [full documentation](../../docs/) for a tutorial, more recipes, and the API reference.
+## 📦 Packages
+
+| Package                                                                              | What it's for                 |
+| ------------------------------------------------------------------------------------ | ----------------------------- |
+| [`migration-preflight`](../migration-preflight)                                      | Core: replay engine, ports    |
+| `@migration-preflight/adapters-sqlite`                                               | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/adapters-postgres`](../migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+
+_`@migration-preflight/adapters-sqlite` isn't linked above: that's this package._
+
+## 📚 Documentation
+
+- 🚀 **[Tutorial](../../docs/tutorial.md)**: seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](../../docs/how-to.md)**: task recipes.
+- 📖 **[Reference](../../docs/reference.md)**: API and package layout.
+- 💡 **[Explanation](../../docs/explanation.md)**: design rationale.
 
 ## Contributing
 
