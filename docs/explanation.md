@@ -5,10 +5,8 @@
 
 ## Why "did it apply" isn't enough
 
-A migration that drops and recreates a table, or renames a column by dropping the old one, applies
-cleanly (no error) while destroying every row that was in it. An empty test database can't catch
-that; there was never any data to lose. The only way to catch it is to seed a row first, the way
-production has rows, and check it's still correct after. Seed, migrate, verify, not just migrate.
+See [README § The problem](../README.md#-the-problem) and [§ The idea](../README.md#-the-idea) for
+what this catches and why. Short version: seed, migrate, verify, not just migrate.
 
 ## Why three packages, not one
 
