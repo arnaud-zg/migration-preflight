@@ -32,6 +32,8 @@ class MigrationChain {
     seedsAfter: (migration: Migration) => readonly SqlStatement[],
   ): Promise<void>;
 
+  applyAll(seedsAfter?: (migration: Migration) => readonly SqlStatement[]): Promise<void>;
+
   hasRow(table: string, id: string, idColumn?: string): Promise<boolean>;
   getRow(table: string, id: string, idColumn?: string): Promise<SqlRow | undefined>;
   foreignKeyViolations(): Promise<SqlRow[]>;
@@ -40,6 +42,9 @@ class MigrationChain {
 
 - `applyThrough(maxIdx, seedsAfter)`: runs every migration whose `idx <= maxIdx`, in order, inside
   one transaction; after each migration's statements, runs whatever `seedsAfter(migration)` returns.
+- `applyAll(seedsAfter?)`: `applyThrough` against the whole history, without computing `maxIdx`
+  yourself; `seedsAfter` defaults to seeding nothing. A no-op on an empty history, rather than
+  throwing.
 - `hasRow` / `getRow`: query by `idColumn` (defaults to `"id"`); the table name is always
   double-quoted, so a reserved-word table name (Postgres's `user`, for example) still resolves.
 - `foreignKeyViolations()`: delegates to the adapter, see

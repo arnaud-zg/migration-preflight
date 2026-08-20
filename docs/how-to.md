@@ -58,25 +58,31 @@ import type { SqlStatement } from "migration-preflight";
 import { MigrationChain, renderInsert } from "migration-preflight";
 
 // Reuses the library's own SqlStatement shape instead of a hand-rolled one, so this
-// can't silently drift out of sync with what applyThrough actually expects.
+// can't silently drift out of sync with what applyAll's seedsAfter callback expects.
 type Seed = SqlStatement & {
-  readonly after: string; // the migration tag this seed is inserted right after
   readonly table: string;
   readonly id: string;
 };
 
-const userSeed: Seed = {
-  after: "0001_add_users",
-  table: "users",
-  id: "user-1",
-  sql: renderInsert("users", { id: "user-1", email: "a@b.com" }),
-  params: [],
-};
+// Keyed by migration tag, not idx: a tag is the migration's stable name, it doesn't shift
+// when a migration is added or removed elsewhere in the history. One array per tag, so more
+// than one seed can go after the same migration.
+const SEEDS_BY_TAG = new Map<string, readonly Seed[]>([
+  [
+    "0001_add_users",
+    [
+      {
+        table: "users",
+        id: "user-1",
+        sql: renderInsert("users", { id: "user-1", email: "a@b.com" }),
+        params: [],
+      },
+    ],
+  ],
+  // ...one entry per migration tag you want to seed after
+]);
 
-const ALL_SEEDS: readonly Seed[] = [userSeed /* , ...one per row you want to plant */];
-const seedsAfter = (tag: string) => ALL_SEEDS.filter((seed) => seed.after === tag);
-
-await chain.applyThrough(migrations.at(-1)!.idx, (migration) => seedsAfter(migration.tag));
+await chain.applyAll((migration) => SEEDS_BY_TAG.get(migration.tag) ?? []);
 
 expect(await chain.hasRow("users", "user-1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
@@ -88,10 +94,6 @@ for plain SQL.
 
 `hasRow`/`getRow` assume the primary key column is `id`, pass a third argument for a table whose PK
 is named something else: `chain.hasRow("order_line_items", "li1", "order_id")`.
-
-Keyed by `tag`, not `idx`: a tag is the migration's stable name, it doesn't shift when a migration
-is added or removed elsewhere in the history, and `after: "0004_add_orders_status"` says what it
-means without cross-referencing a migration list.
 
 ## Run a quick "does it apply cleanly" smoke test
 

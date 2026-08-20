@@ -62,7 +62,7 @@ import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFil
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-await chain.applyThrough(migrations.at(-1)!.idx, () => []);
+await chain.applyAll();
 ```
 
 The payoff, catching a migration that silently drops data, comes from seeding a row between two
@@ -84,26 +84,30 @@ _`migration-preflight` isn't linked above: that's this package._
 ## Seeding between migrations
 
 A seed is a row tagged with the migration it goes in right after, a test fixture only, never
-imported by production code. `applyThrough` runs it in place after that migration, so you can assert
-the row is still correct once every later migration has run:
+imported by production code. `applyAll` runs it in place after that migration, so you can assert the
+row is still correct once every later migration has run:
 
 ```ts
+import type { SqlStatement } from "migration-preflight";
 import { renderInsert } from "migration-preflight";
 
-await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.tag === "0000_create_users" // match your own first migration's tag
-    ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
-    : [],
-);
+const seedsByTag = new Map<string, readonly SqlStatement[]>([
+  [
+    "0000_create_users", // match your own first migration's tag
+    [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }],
+  ],
+]);
+
+await chain.applyAll((migration) => seedsByTag.get(migration.tag) ?? []);
 
 // Still there after every later migration ran? Then this migration history is safe.
 expect(await chain.hasRow("users", "u1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-Seeding more than one row gets unwieldy as a chain of `migration.tag === ...` checks. See
+Seeding more rows is another `seedsByTag` entry, not a rewritten callback. See
 [How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#seed-a-row-between-migrations)
-for the recipe that scales: seeds as data, filtered by tag.
+for the full recipe, including a primary key column other than `id`.
 
 ## Integrating with Drizzle, Prisma, plain SQL, and Postgres
 
