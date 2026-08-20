@@ -57,7 +57,7 @@ pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
 ```ts
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
 import { MigrationChain } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
+import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
 
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
@@ -90,8 +90,9 @@ the row is still correct once every later migration has run:
 ```ts
 import { renderInsert } from "migration-preflight";
 
+// migration.idx works the same no matter which source produced `migrations`.
 await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.tag === "0000_create_users"
+  migration.idx === 0
     ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
     : [],
 );
@@ -101,7 +102,7 @@ expect(await chain.hasRow("users", "u1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-Seeding more than one row gets unwieldy as a chain of `migration.tag === ...` checks. See
+Seeding more than one row gets unwieldy as a chain of `migration.idx === ...` checks. See
 [How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#seed-a-row-between-migrations)
 for the recipe that scales: seeds as data, filtered by tag.
 

@@ -145,17 +145,18 @@ needs a seed, next.
 
 ## 4. Seed a row before the risky migration, and check it survives
 
-Plant a `users` row right after `0000_create_users`, then assert it's still there once every later
-migration, including `0001_add_users_bio`, has run:
+Plant a `users` row right after the first migration (`migration.idx === 0`, the same regardless of
+which source you picked in step 2), then assert it's still there once every later migration,
+including the one adding `bio`, has run:
 
 ```ts
 import { MigrationChain, renderInsert } from "migration-preflight";
 
-it("keeps an existing user's row through 0001_add_users_bio", async () => {
+it("keeps an existing user's row through the later migrations", async () => {
   const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
   await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-    migration.tag === "0000_create_users"
+    migration.idx === 0
       ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
       : [],
   );
@@ -177,36 +178,9 @@ here, caught in a test, not in production.
 
 ## 6. Scale to more than one seed
 
-`migration.tag === "0000_create_users"` stops scaling once your history has more than a couple of
-risky migrations. Model seeds as data instead, and filter by tag:
-
-```ts
-type Seed = {
-  readonly after: string; // the migration tag this seed goes in right after
-  readonly table: string;
-  readonly id: string;
-  readonly sql: string;
-  readonly params: readonly (string | number | null)[];
-};
-
-const ALL_SEEDS: readonly Seed[] = [
-  {
-    after: "0000_create_users",
-    table: "users",
-    id: "u1",
-    sql: renderInsert("users", { id: "u1", email: "a@b.com" }),
-    params: [],
-  },
-  // ...one entry per row you want planted, anywhere in the history
-];
-
-const seedsAfter = (tag: string) => ALL_SEEDS.filter((seed) => seed.after === tag);
-
-await chain.applyThrough(migrations.at(-1)!.idx, (migration) => seedsAfter(migration.tag));
-
-expect(await chain.hasRow("users", "u1")).toBe(true);
-```
-
-A new seed is now a new `ALL_SEEDS` entry, not a new branch in the callback. Full recipe, including
-a primary key column other than `id`, and Postgres extensions:
-[How-to guides](./how-to.md#seed-a-row-between-migrations).
+`migration.idx === 0` stops scaling once your history has more than a couple of risky migrations.
+Model seeds as data instead: an array of `{ after, table, id, sql, params }`, filtered by the
+migration's `tag`, not `idx`, a tag is a stable name and doesn't shift when a migration is added or
+removed elsewhere in the history. Adding a seed is then a new array entry, not a new branch in the
+callback. See [How-to § Seed a row between migrations](./how-to.md#seed-a-row-between-migrations)
+for the full pattern.

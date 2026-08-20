@@ -65,9 +65,10 @@ import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFil
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-// Seed a row before the risky migration, then check it survives every later one
+// Seed a row after the first migration, then check it survives every later one.
+// migration.idx works the same no matter which source produced `migrations`.
 await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.tag === "0000_create_users"
+  migration.idx === 0
     ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
     : [],
 );
@@ -75,7 +76,9 @@ await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
 await chain.hasRow("users", "u1"); // true, the row survived the whole history
 ```
 
-See the [Tutorial](./docs/tutorial.md) to walk through this step by step.
+See the [Tutorial](./docs/tutorial.md) to walk through this step by step, or
+[How-to § Seed a row between migrations](./docs/how-to.md#seed-a-row-between-migrations) to scale
+beyond one seed.
 
 ## 📦 Packages
 
