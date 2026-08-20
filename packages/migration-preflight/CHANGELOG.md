@@ -1,5 +1,16 @@
 # migration-preflight
 
+## 0.2.0
+
+### Minor Changes
+
+- ✨ Test any migration history the same way, end to end.
+  
+  - `prismaFileSource` and `sqlFileSource` join `drizzleFileSource`: read a Prisma `prisma/migrations/`
+    directory or a flat folder of numbered `.sql` files, no custom reader required.
+  - `applyAll()` replays your whole migration history in one call, no `migrations.at(-1)!.idx` math,
+    and it's a safe no-op on an empty history.
+
 ## 0.1.0
 
 ### Patch Changes

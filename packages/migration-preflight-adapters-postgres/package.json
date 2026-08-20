@@ -1,6 +1,6 @@
 {
   "name": "@migration-preflight/adapters-postgres",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "PGlite (in-memory WASM Postgres) driver for migration-preflight: test your Postgres migrations with no Docker, no external server.",
   "keywords": [
     "migration",
