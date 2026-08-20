@@ -12,20 +12,57 @@
 
 Both are dev dependencies. Install only the one matching your database.
 
+## Pick a migration source
+
+Every source is a `MigrationSource`: `(migrationsDir: string) => readonly Migration[]`. Three ship
+with the core package, all importable from `migration-preflight/sources`:
+
+| You're using    | Import              | Reads                                                        |
+| --------------- | ------------------- | ------------------------------------------------------------ |
+| Drizzle         | `drizzleFileSource` | `out/meta/_journal.json` + `<tag>.sql`, drizzle-kit's output |
+| Prisma          | `prismaFileSource`  | `prisma/migrations/<timestamp>_<name>/migration.sql`         |
+| Plain SQL files | `sqlFileSource`     | A flat folder of `<tag>.sql`, sorted by filename             |
+| Anything else   | n/a                 | [Write your own](#add-a-custom-migrationsource)              |
+
+```ts
+import { prismaFileSource } from "migration-preflight/sources"; // or drizzleFileSource, sqlFileSource
+
+const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
+const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
+```
+
+Everything below (seeding, foreign key assertions) works the same no matter which source produced
+`migrations`, except the [`/drizzle` smoke test](#run-a-quick-does-it-apply-cleanly-smoke-test):
+it's specific to Drizzle's own journal format, so it doesn't apply to Prisma or plain SQL files.
+
+**Plain SQL files: one statement per file is safest.** `MigrationChain` runs each migration's SQL as
+a single prepared statement, and an unmarked multi-statement file behaves differently per dialect:
+`node:sqlite` silently runs only the first statement and drops the rest, no error, while PGlite
+throws `cannot insert multiple commands into a prepared statement`. Need more than one statement in
+a file? Separate them with Drizzle's own marker, the same one `splitIntoStatements` already looks
+for regardless of source:
+
+```sql
+CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
+--> statement-breakpoint
+CREATE INDEX users_email_idx ON users (email);
+```
+
 ## Seed a row between migrations
 
 A seed is a row tagged with the migration it goes in right after, a test fixture only, never
-imported by production code.
+imported by production code. Works the same for `migrations` from any source:
 
 ```ts
+import type { SqlStatement } from "migration-preflight";
 import { MigrationChain, renderInsert } from "migration-preflight";
 
-type Seed = {
+// Reuses the library's own SqlStatement shape instead of a hand-rolled one, so this
+// can't silently drift out of sync with what applyThrough actually expects.
+type Seed = SqlStatement & {
   readonly after: string; // the migration tag this seed is inserted right after
   readonly table: string;
   readonly id: string;
-  readonly sql: string;
-  readonly params: readonly (string | number | null)[];
 };
 
 const userSeed: Seed = {
@@ -45,11 +82,16 @@ expect(await chain.hasRow("users", "user-1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-`renderInsert` hand-writes the seed SQL for clarity. A fuller setup typically types seeds straight
-off your own Drizzle model instead.
+`renderInsert` hand-writes the seed SQL for clarity. A fuller setup typically types seeds off your
+own model instead: Drizzle's `InferInsertModel`, Prisma's generated types, or a hand-written type
+for plain SQL.
 
 `hasRow`/`getRow` assume the primary key column is `id`, pass a third argument for a table whose PK
 is named something else: `chain.hasRow("order_line_items", "li1", "order_id")`.
+
+Keyed by `tag`, not `idx`: a tag is the migration's stable name, it doesn't shift when a migration
+is added or removed elsewhere in the history, and `after: "0004_add_orders_status"` says what it
+means without cross-referencing a migration list.
 
 ## Run a quick "does it apply cleanly" smoke test
 
@@ -104,42 +146,6 @@ supplied yourself.
   whichever `run`/`transaction` call caused it. Wrap that call in `expect(...).rejects.toThrow()`.
 
 See [Explanation](./explanation.md#why-foreignkeyviolations-always-returns--on-postgres) for why.
-
-## Pick a migration source
-
-Every source is a `MigrationSource`: `(migrationsDir: string) => readonly Migration[]`. Three ship
-with the core package, all importable from `migration-preflight/sources`:
-
-| You're using    | Import              | Reads                                                        |
-| --------------- | ------------------- | ------------------------------------------------------------ |
-| Drizzle         | `drizzleFileSource` | `out/meta/_journal.json` + `<tag>.sql`, drizzle-kit's output |
-| Prisma          | `prismaFileSource`  | `prisma/migrations/<timestamp>_<name>/migration.sql`         |
-| Plain SQL files | `sqlFileSource`     | A flat folder of `<tag>.sql`, sorted by filename             |
-| Anything else   | n/a                 | [Write your own](#add-a-custom-migrationsource)              |
-
-```ts
-import { prismaFileSource } from "migration-preflight/sources"; // or drizzleFileSource, sqlFileSource
-
-const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
-const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
-```
-
-Once you have `migrations`, seeding, foreign key assertions, and everything else in this guide work
-the same regardless of which source produced it, except the `/drizzle` smoke test above: it's
-specific to Drizzle's own journal format, so it doesn't apply to Prisma or plain SQL files.
-
-**Plain SQL files: one statement per file is safest.** `MigrationChain` runs each migration's SQL as
-a single prepared statement, and an unmarked multi-statement file behaves differently per dialect:
-`node:sqlite` silently runs only the first statement and drops the rest, no error, while PGlite
-throws `cannot insert multiple commands into a prepared statement`. Need more than one statement in
-a file? Separate them with Drizzle's own marker, the same one `splitIntoStatements` already looks
-for regardless of source:
-
-```sql
-CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
---> statement-breakpoint
-CREATE INDEX users_email_idx ON users (email);
-```
 
 ## Add a custom `MigrationSource`
 

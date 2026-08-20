@@ -57,7 +57,7 @@ pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
 ```ts
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
 import { MigrationChain } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
+import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
 
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
@@ -91,7 +91,7 @@ the row is still correct once every later migration has run:
 import { renderInsert } from "migration-preflight";
 
 await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.tag === "0000_create_users"
+  migration.tag === "0000_create_users" // match your own first migration's tag
     ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
     : [],
 );
