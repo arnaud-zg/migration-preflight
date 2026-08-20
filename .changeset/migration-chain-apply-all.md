@@ -2,12 +2,10 @@
 "migration-preflight": patch
 ---
 
-Stop computing `migrations.at(-1)!.idx` by hand every time you want to apply the whole history.
+✨ **`applyAll()`**: apply your whole migration history in one call.
 
-`MigrationChain.applyAll(seedsAfter?)` does what nearly every test already wrote out longhand:
-`applyThrough` against the last migration, with `seedsAfter` defaulting to seeding nothing for the
-plain "does it apply cleanly" check. It also handles an empty migration history gracefully instead
-of throwing, which the non-null assertion in the old pattern didn't.
+- No more `migrations.at(-1)!.idx` math
+- Defaults to seeding nothing, perfect for the "does it apply cleanly" check
+- Empty history? No throw, just a no-op
 
-`applyThrough(maxIdx, seedsAfter)` is unchanged and still there for the cases that actually need a
-specific cutoff, e.g. driving one test case per migration.
+`applyThrough(maxIdx, seedsAfter)` is still there for a specific cutoff.
