@@ -64,18 +64,25 @@ import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/adapters-
 
 ## Usage
 
+Works with any bundled migration source, Drizzle, Prisma, or plain SQL files:
+
 ```ts
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite";
 import { MigrationChain } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
+import { drizzleFileSource, prismaFileSource, sqlFileSource } from "migration-preflight/sources";
 
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
+// or: prismaFileSource(join(import.meta.dirname, "../prisma/migrations"))
+// or: sqlFileSource(join(import.meta.dirname, "migrations"))
+
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-await chain.applyThrough(migrations.at(-1)!.idx, () => []);
+await chain.applyAll();
 ```
 
-No emulator, no device, no Docker, this runs in plain Node, as fast as any other test.
+No emulator, no device, no Docker, this runs in plain Node, as fast as any other test. See
+[How-to § Pick a migration source](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#pick-a-migration-source)
+for what each folder layout looks like.
 
 ## 📦 Packages
 

@@ -76,6 +76,44 @@ describe("MigrationChain.applyThrough", () => {
   });
 });
 
+describe("MigrationChain.applyAll", () => {
+  it("runs every migration, without having to compute the last idx", async () => {
+    const database = new RecordingDatabase();
+    const chain = new MigrationChain(database, [
+      migration(0, "CREATE TABLE a (id text);"),
+      migration(1, "CREATE TABLE b (id text);"),
+    ]);
+
+    await chain.applyAll((m) =>
+      m.idx === 0 ? [{ sql: "INSERT INTO a VALUES ('x')", params: [] }] : [],
+    );
+
+    expect(database.ranInTransaction).toEqual([
+      "CREATE TABLE a (id text);",
+      "INSERT INTO a VALUES ('x')",
+      "CREATE TABLE b (id text);",
+    ]);
+  });
+
+  it("seeds nothing when seedsAfter is omitted", async () => {
+    const database = new RecordingDatabase();
+    const chain = new MigrationChain(database, [migration(0, "CREATE TABLE a (id text);")]);
+
+    await chain.applyAll();
+
+    expect(database.ranInTransaction).toEqual(["CREATE TABLE a (id text);"]);
+  });
+
+  it("is a no-op on an empty history, rather than throwing", async () => {
+    const database = new RecordingDatabase();
+    const chain = new MigrationChain(database, []);
+
+    await expect(chain.applyAll()).resolves.toBeUndefined();
+
+    expect(database.ranInTransaction).toEqual([]);
+  });
+});
+
 describe("MigrationChain.hasRow / getRow", () => {
   it("queries by the id column by default", async () => {
     const database = new RecordingDatabase();

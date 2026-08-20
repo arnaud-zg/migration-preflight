@@ -38,6 +38,18 @@ export class MigrationChain {
   }
 
   /**
+   * Applies the whole history, seeding after each one: `applyThrough(maxIdx, ...)` without
+   * having to compute `maxIdx` yourself. `seedsAfter` defaults to seeding nothing, for the
+   * "does it apply cleanly" case. A no-op on an empty history, rather than throwing.
+   */
+  async applyAll(
+    seedsAfter: (migration: Migration) => readonly SqlStatement[] = () => [],
+  ): Promise<void> {
+    const lastIdx = this.migrations.at(-1)?.idx ?? -1;
+    await this.applyThrough(lastIdx, seedsAfter);
+  }
+
+  /**
    * Whether a row with the given id exists in the table. `idColumn` defaults
    * to `"id"` — pass the real primary key name for a table whose PK is
    * called something else (e.g. a denormalized projection keyed by its

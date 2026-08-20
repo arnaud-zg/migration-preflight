@@ -135,7 +135,7 @@ describe("migration history", () => {
   it("applies cleanly, start to finish", async () => {
     const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-    await expect(chain.applyThrough(migrations.at(-1)!.idx, () => [])).resolves.toBeUndefined();
+    await expect(chain.applyAll()).resolves.toBeUndefined();
   });
 });
 ```
@@ -149,16 +149,20 @@ Plant a `users` row right after `0000_create_users`, then assert it's still ther
 migration, including the one adding `bio`, has run:
 
 ```ts
+import type { SqlStatement } from "migration-preflight";
 import { MigrationChain, renderInsert } from "migration-preflight";
 
 it("keeps an existing user's row through the later migrations", async () => {
   const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-  await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-    migration.tag === "0000_create_users" // match your own first migration's tag
-      ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
-      : [],
-  );
+  const seedsByTag = new Map<string, readonly SqlStatement[]>([
+    [
+      "0000_create_users", // match your own first migration's tag
+      [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }],
+    ],
+  ]);
+
+  await chain.applyAll((migration) => seedsByTag.get(migration.tag) ?? []);
 
   expect(await chain.hasRow("users", "u1")).toBe(true);
   expect(await chain.getRow("users", "u1")).toMatchObject({ email: "a@b.com" });
@@ -177,8 +181,6 @@ here, caught in a test, not in production.
 
 ## 6. Scale to more than one seed
 
-A chain of `migration.tag === "..."` checks doesn't scale once your history has more than a couple
-of risky migrations. Model seeds as data instead: an array of `{ after, table, id, sql, params }`,
-filtered by tag. Adding a seed is then a new array entry, not a new branch in the callback. See
-[How-to § Seed a row between migrations](./how-to.md#seed-a-row-between-migrations) for the full
-pattern.
+More rows are more `seedsByTag` entries, the lookup above already scales. How-to's version also
+names each seed's table and row id, useful once you're scanning a list of many: see
+[How-to § Seed a row between migrations](./how-to.md#seed-a-row-between-migrations).

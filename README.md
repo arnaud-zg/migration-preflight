@@ -58,6 +58,7 @@ pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
 ```
 
 ```ts
+import type { SqlStatement } from "migration-preflight";
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
 import { MigrationChain, renderInsert } from "migration-preflight";
 import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
@@ -66,18 +67,21 @@ const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
 // Seed a row after the first migration, then check it survives every later one.
-await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.tag === "0000_create_users" // match your own first migration's tag
-    ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
-    : [],
-);
+const seedsByTag = new Map<string, readonly SqlStatement[]>([
+  [
+    "0000_create_users", // match your own first migration's tag
+    [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }],
+  ],
+]);
+
+await chain.applyAll((migration) => seedsByTag.get(migration.tag) ?? []);
 
 await chain.hasRow("users", "u1"); // true, the row survived the whole history
 ```
 
 See the [Tutorial](./docs/tutorial.md) to walk through this step by step, or
-[How-to § Seed a row between migrations](./docs/how-to.md#seed-a-row-between-migrations) to scale
-beyond one seed.
+[How-to § Seed a row between migrations](./docs/how-to.md#seed-a-row-between-migrations) for the
+full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten callback.
 
 ## 📦 Packages
 

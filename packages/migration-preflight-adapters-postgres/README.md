@@ -64,16 +64,25 @@ import { runDrizzlePgliteMigrations } from "@migration-preflight/adapters-postgr
 
 ## Usage
 
+Works with any bundled migration source, Drizzle, Prisma, or plain SQL files:
+
 ```ts
 import { createPgliteMigrationDatabase } from "@migration-preflight/adapters-postgres";
 import { MigrationChain } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
+import { drizzleFileSource, prismaFileSource, sqlFileSource } from "migration-preflight/sources";
 
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
+// or: prismaFileSource(join(import.meta.dirname, "../prisma/migrations"))
+// or: sqlFileSource(join(import.meta.dirname, "migrations"))
+
 const chain = new MigrationChain(createPgliteMigrationDatabase(), migrations);
 
-await chain.applyThrough(migrations.at(-1)!.idx, () => []);
+await chain.applyAll();
 ```
+
+See
+[How-to § Pick a migration source](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#pick-a-migration-source)
+for what each folder layout looks like.
 
 ## Foreign keys behave differently here than in SQLite
 
