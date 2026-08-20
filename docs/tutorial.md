@@ -145,9 +145,8 @@ needs a seed, next.
 
 ## 4. Seed a row before the risky migration, and check it survives
 
-Plant a `users` row right after the first migration (`migration.idx === 0`, the same regardless of
-which source you picked in step 2), then assert it's still there once every later migration,
-including the one adding `bio`, has run:
+Plant a `users` row right after `0000_create_users`, then assert it's still there once every later
+migration, including the one adding `bio`, has run:
 
 ```ts
 import { MigrationChain, renderInsert } from "migration-preflight";
@@ -156,7 +155,7 @@ it("keeps an existing user's row through the later migrations", async () => {
   const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
   await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-    migration.idx === 0
+    migration.tag === "0000_create_users" // match your own first migration's tag
       ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
       : [],
   );
@@ -178,9 +177,8 @@ here, caught in a test, not in production.
 
 ## 6. Scale to more than one seed
 
-`migration.idx === 0` stops scaling once your history has more than a couple of risky migrations.
-Model seeds as data instead: an array of `{ after, table, id, sql, params }`, filtered by the
-migration's `tag`, not `idx`, a tag is a stable name and doesn't shift when a migration is added or
-removed elsewhere in the history. Adding a seed is then a new array entry, not a new branch in the
-callback. See [How-to § Seed a row between migrations](./how-to.md#seed-a-row-between-migrations)
-for the full pattern.
+A chain of `migration.tag === "..."` checks doesn't scale once your history has more than a couple
+of risky migrations. Model seeds as data instead: an array of `{ after, table, id, sql, params }`,
+filtered by tag. Adding a seed is then a new array entry, not a new branch in the callback. See
+[How-to § Seed a row between migrations](./how-to.md#seed-a-row-between-migrations) for the full
+pattern.

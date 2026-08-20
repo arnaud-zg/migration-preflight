@@ -54,14 +54,15 @@ A seed is a row tagged with the migration it goes in right after, a test fixture
 imported by production code. Works the same for `migrations` from any source:
 
 ```ts
+import type { SqlStatement } from "migration-preflight";
 import { MigrationChain, renderInsert } from "migration-preflight";
 
-type Seed = {
+// Reuses the library's own SqlStatement shape instead of a hand-rolled one, so this
+// can't silently drift out of sync with what applyThrough actually expects.
+type Seed = SqlStatement & {
   readonly after: string; // the migration tag this seed is inserted right after
   readonly table: string;
   readonly id: string;
-  readonly sql: string;
-  readonly params: readonly (string | number | null)[];
 };
 
 const userSeed: Seed = {

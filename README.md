@@ -66,9 +66,8 @@ const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
 // Seed a row after the first migration, then check it survives every later one.
-// migration.idx works the same no matter which source produced `migrations`.
 await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
-  migration.idx === 0
+  migration.tag === "0000_create_users" // match your own first migration's tag
     ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
     : [],
 );
