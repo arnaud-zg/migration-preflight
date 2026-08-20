@@ -20,7 +20,7 @@ Every path below ends up producing the same thing: a `migrations` array of `{ id
 Steps 3–5 don't care which one you used to get there, pick whichever matches your project.
 
 <details open>
-<summary><b>Drizzle</b> — bundled, no custom code needed</summary>
+<summary><b>Drizzle</b> (bundled, no custom code needed)</summary>
 
 `drizzleFileSource` reads a Drizzle `out/` directory, the same one `drizzle-kit generate` writes:
 
@@ -62,10 +62,11 @@ const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 </details>
 
 <details>
-<summary><b>Prisma</b></summary>
+<summary><b>Prisma</b> (also bundled)</summary>
 
-`prisma/migrations/<timestamp>_<name>/migration.sql` already sorts into the right order as plain
-strings, no journal file to parse:
+`prismaFileSource` reads a Prisma `prisma/migrations/` directory: each
+`<timestamp>_<name>/migration.sql` folder already sorts into the right order as a plain string, no
+journal file to parse:
 
 ```
 prisma/migrations/
@@ -76,34 +77,18 @@ prisma/migrations/
 ```
 
 ```ts
-// prismaFileSource.ts
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { Migration, MigrationSource } from "migration-preflight/sources";
-
-export const prismaFileSource: MigrationSource = (migrationsDir) =>
-  readdirSync(migrationsDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort()
-    .map((tag, idx): Migration => ({
-      idx,
-      tag,
-      sql: readFileSync(join(migrationsDir, tag, "migration.sql"), "utf8"),
-    }));
+import { prismaFileSource } from "migration-preflight/sources";
 
 const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
 ```
 
-Full recipe, including which other guides apply as-is:
-[How-to § Use with Prisma](./how-to.md#use-with-prisma).
-
 </details>
 
 <details>
-<summary><b>Plain SQL files</b> — no migration tool at all</summary>
+<summary><b>Plain SQL files</b> (also bundled, no migration tool at all)</summary>
 
-A flat folder of numbered `.sql` files, sorted by filename, one statement per file:
+`sqlFileSource` reads a flat folder of numbered `.sql` files, sorted by filename, one statement per
+file:
 
 ```
 migrations/
@@ -112,33 +97,29 @@ migrations/
 ```
 
 ```ts
-// sqlFileSource.ts
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { Migration, MigrationSource } from "migration-preflight/sources";
-
-export const sqlFileSource: MigrationSource = (migrationsDir) =>
-  readdirSync(migrationsDir)
-    .filter((file) => file.endsWith(".sql"))
-    .sort()
-    .map((file, idx): Migration => ({
-      idx,
-      tag: file.replace(/\.sql$/, ""),
-      sql: readFileSync(join(migrationsDir, file), "utf8"),
-    }));
+import { sqlFileSource } from "migration-preflight/sources";
 
 const migrations = sqlFileSource(join(import.meta.dirname, "migrations"));
 ```
 
-Full recipe, including how to handle more than one statement per file:
-[How-to § Use with plain SQL files](./how-to.md#use-with-plain-sql-files).
+More than one statement in a file? See
+[How-to § Pick a migration source](./how-to.md#pick-a-migration-source) for the marker that splits
+them.
+
+</details>
+
+<details>
+<summary><b>Anything else</b> (Knex, TypeORM, your own format)</summary>
+
+Write your own `MigrationSource`, see
+[How-to § Add a custom `MigrationSource`](./how-to.md#add-a-custom-migrationsource).
 
 </details>
 
 ## 3. Prove the whole history applies cleanly
 
-Using the `migrations` from step 2, shown here with Drizzle; swap in your own if you picked Prisma
-or plain SQL:
+Using the `migrations` from step 2, shown here with Drizzle; swap the import if you picked Prisma or
+plain SQL:
 
 ```ts
 // preflight.test.ts
@@ -194,5 +175,38 @@ pnpm exec vitest run preflight.test.ts
 If `0001_add_users_bio` had dropped and recreated `users` instead, `hasRow` would come back `false`
 here, caught in a test, not in production.
 
-For seeding real Drizzle-typed rows, Postgres extensions, and picking between adapters, see
-[How-to guides](./how-to.md).
+## 6. Scale to more than one seed
+
+`migration.tag === "0000_create_users"` stops scaling once your history has more than a couple of
+risky migrations. Model seeds as data instead, and filter by tag:
+
+```ts
+type Seed = {
+  readonly after: string; // the migration tag this seed goes in right after
+  readonly table: string;
+  readonly id: string;
+  readonly sql: string;
+  readonly params: readonly (string | number | null)[];
+};
+
+const ALL_SEEDS: readonly Seed[] = [
+  {
+    after: "0000_create_users",
+    table: "users",
+    id: "u1",
+    sql: renderInsert("users", { id: "u1", email: "a@b.com" }),
+    params: [],
+  },
+  // ...one entry per row you want planted, anywhere in the history
+];
+
+const seedsAfter = (tag: string) => ALL_SEEDS.filter((seed) => seed.after === tag);
+
+await chain.applyThrough(migrations.at(-1)!.idx, (migration) => seedsAfter(migration.tag));
+
+expect(await chain.hasRow("users", "u1")).toBe(true);
+```
+
+A new seed is now a new `ALL_SEEDS` entry, not a new branch in the callback. Full recipe, including
+a primary key column other than `id`, and Postgres extensions:
+[How-to guides](./how-to.md#seed-a-row-between-migrations).

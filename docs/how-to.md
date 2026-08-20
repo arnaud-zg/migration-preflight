@@ -105,76 +105,35 @@ supplied yourself.
 
 See [Explanation](./explanation.md#why-foreignkeyviolations-always-returns--on-postgres) for why.
 
-## Use with Prisma
+## Pick a migration source
 
-Prisma has no bundled `MigrationSource`, its format doesn't need one: each migration is a
-`<timestamp>_<name>/migration.sql` folder under `prisma/migrations`, and folder names already sort
-into the right order as plain strings, no journal file to parse.
+Every source is a `MigrationSource`: `(migrationsDir: string) => readonly Migration[]`. Three ship
+with the core package, all importable from `migration-preflight/sources`:
 
-```ts
-// prismaFileSource.ts
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { Migration, MigrationSource } from "migration-preflight/sources";
-
-export const prismaFileSource: MigrationSource = (migrationsDir) =>
-  readdirSync(migrationsDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort()
-    .map((tag, idx): Migration => ({
-      idx,
-      tag,
-      sql: readFileSync(join(migrationsDir, tag, "migration.sql"), "utf8"),
-    }));
-```
+| You're using    | Import              | Reads                                                        |
+| --------------- | ------------------- | ------------------------------------------------------------ |
+| Drizzle         | `drizzleFileSource` | `out/meta/_journal.json` + `<tag>.sql`, drizzle-kit's output |
+| Prisma          | `prismaFileSource`  | `prisma/migrations/<timestamp>_<name>/migration.sql`         |
+| Plain SQL files | `sqlFileSource`     | A flat folder of `<tag>.sql`, sorted by filename             |
+| Anything else   | n/a                 | [Write your own](#add-a-custom-migrationsource)              |
 
 ```ts
+import { prismaFileSource } from "migration-preflight/sources"; // or drizzleFileSource, sqlFileSource
+
 const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 ```
 
-From here, seeding and foreign key assertions work unchanged: they operate on `migrations`/`chain`,
-not on how those migrations were read. The `/drizzle` smoke test above doesn't apply here, it's
-specific to Drizzle's own migration format.
+Once you have `migrations`, seeding, foreign key assertions, and everything else in this guide work
+the same regardless of which source produced it, except the `/drizzle` smoke test above: it's
+specific to Drizzle's own journal format, so it doesn't apply to Prisma or plain SQL files.
 
-## Use with plain SQL files
-
-No migration tool at all, just a folder of numbered `.sql` files, sorted by filename:
-
-```
-migrations/
-├── 0000_create_users.sql
-└── 0001_add_users_bio.sql
-```
-
-```ts
-// sqlFileSource.ts
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { Migration, MigrationSource } from "migration-preflight/sources";
-
-export const sqlFileSource: MigrationSource = (migrationsDir) =>
-  readdirSync(migrationsDir)
-    .filter((file) => file.endsWith(".sql"))
-    .sort()
-    .map((file, idx): Migration => ({
-      idx,
-      tag: file.replace(/\.sql$/, ""),
-      sql: readFileSync(join(migrationsDir, file), "utf8"),
-    }));
-```
-
-```ts
-const migrations = sqlFileSource(join(import.meta.dirname, "migrations"));
-const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
-```
-
-One statement per file is safest. `MigrationChain` runs each migration's SQL as a single prepared
-statement, and an unmarked multi-statement file behaves differently per dialect: `node:sqlite`
-silently runs only the first statement and drops the rest, no error, while PGlite throws
-`cannot insert multiple commands into a prepared statement`. Need more than one statement in a file?
-Separate them with Drizzle's own marker, the same one `splitIntoStatements` already looks for:
+**Plain SQL files: one statement per file is safest.** `MigrationChain` runs each migration's SQL as
+a single prepared statement, and an unmarked multi-statement file behaves differently per dialect:
+`node:sqlite` silently runs only the first statement and drops the rest, no error, while PGlite
+throws `cannot insert multiple commands into a prepared statement`. Need more than one statement in
+a file? Separate them with Drizzle's own marker, the same one `splitIntoStatements` already looks
+for regardless of source:
 
 ```sql
 CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
@@ -182,14 +141,9 @@ CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
 CREATE INDEX users_email_idx ON users (email);
 ```
 
-Seeding and foreign key assertions work unchanged here too; the `/drizzle` smoke test doesn't apply,
-same reason as Prisma above.
-
 ## Add a custom `MigrationSource`
 
-The core package only depends on the `MigrationSource` port
-(`(migrationsDir: string) => readonly Migration[]`). Write your own for any other migration format
-(Knex, TypeORM, or anything else), the same way `prismaFileSource` and `sqlFileSource` do above:
+For any format none of the bundled sources cover (Knex, TypeORM, or anything else), write your own:
 
 ```ts
 import type { Migration, MigrationSource } from "migration-preflight/sources";

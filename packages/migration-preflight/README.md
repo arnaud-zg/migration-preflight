@@ -88,24 +88,32 @@ imported by production code. `applyThrough` runs it in place after that migratio
 the row is still correct once every later migration has run:
 
 ```ts
-await chain.applyThrough(migrations.at(-1)!.idx, (migration) => seedsAfter(migration.tag));
+import { renderInsert } from "migration-preflight";
+
+await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
+  migration.tag === "0000_create_users"
+    ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
+    : [],
+);
 
 // Still there after every later migration ran? Then this migration history is safe.
-expect(await chain.hasRow("users", "user-1")).toBe(true);
+expect(await chain.hasRow("users", "u1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-See
+Seeding more than one row gets unwieldy as a chain of `migration.tag === ...` checks. See
 [How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#seed-a-row-between-migrations)
-for the full recipe, including the `Seed` type and the `seedsAfter` helper.
+for the recipe that scales: seeds as data, filtered by tag.
 
-## Integrating with Drizzle, SQLite, and Postgres
+## Integrating with Drizzle, Prisma, plain SQL, and Postgres
 
 `migration-preflight` itself only knows the `MigrationSource`, `MigrationDatabase`, and `SqlDialect`
-ports. Concrete support comes from two other packages:
+ports. Concrete support comes from two other packages, plus three bundled sources:
 
-- **`drizzleFileSource`** (`migration-preflight/sources`) reads a Drizzle `out/` journal +
-  `<tag>.sql` files into the `Migration[]` this package replays.
+- **`drizzleFileSource`**, **`prismaFileSource`**, **`sqlFileSource`** (all from
+  `migration-preflight/sources`) each read a different migrations layout, Drizzle's journal,
+  Prisma's `migrations/` folder, or a flat folder of `.sql` files, into the `Migration[]` this
+  package replays.
 - **`@migration-preflight/adapters-sqlite`** and **`@migration-preflight/adapters-postgres`** each
   supply a `MigrationDatabase` and, behind a `/drizzle` subpath, a thin wrapper over Drizzle's own
   migrator for a quick "does it apply cleanly" check.

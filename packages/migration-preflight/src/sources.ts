@@ -3,4 +3,6 @@
 // the ports, migrationSql) does not. Importing "migration-preflight" alone
 // never pulls these in, only "migration-preflight/sources" does.
 export { drizzleFileSource, loadMigrationsFromDisk } from "./sources/drizzleFileSource";
+export { prismaFileSource } from "./sources/prismaFileSource";
+export { sqlFileSource } from "./sources/sqlFileSource";
 export type { MigrationSource } from "./sources/migrationSource.port";

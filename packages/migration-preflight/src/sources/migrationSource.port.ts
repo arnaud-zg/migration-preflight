@@ -1,9 +1,9 @@
 import type { Migration } from "../domain/migrations/migrationChain.ports";
 
 /**
- * Where an ordered list of migrations comes from — independent of the ORM
- * that generated them. `drizzleFileSource` is the shipped implementation;
- * this port is the seam for a future source (e.g. Prisma's `migrations/`
- * directory) once there's a real schema to test one against.
+ * Where an ordered list of migrations comes from, independent of the ORM
+ * that generated them. `drizzleFileSource`, `prismaFileSource`, and
+ * `sqlFileSource` are the shipped implementations; this port is the seam for
+ * anything else (Knex, TypeORM, a custom format).
  */
 export type MigrationSource = (migrationsDir: string) => readonly Migration[];

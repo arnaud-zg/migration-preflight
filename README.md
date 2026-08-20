@@ -59,16 +59,23 @@ pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
 
 ```ts
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
-import { MigrationChain } from "migration-preflight";
-import { drizzleFileSource } from "migration-preflight/sources";
+import { MigrationChain, renderInsert } from "migration-preflight";
+import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
 
 const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 
-await chain.applyThrough(migrations.at(-1)!.idx, () => []);
+// Seed a row before the risky migration, then check it survives every later one
+await chain.applyThrough(migrations.at(-1)!.idx, (migration) =>
+  migration.tag === "0000_create_users"
+    ? [{ sql: renderInsert("users", { id: "u1", email: "a@b.com" }), params: [] }]
+    : [],
+);
+
+await chain.hasRow("users", "u1"); // true, the row survived the whole history
 ```
 
-See the [Tutorial](./docs/tutorial.md) to add the seed step and prove it survives a migration.
+See the [Tutorial](./docs/tutorial.md) to walk through this step by step.
 
 ## 📦 Packages
 
@@ -79,8 +86,9 @@ See the [Tutorial](./docs/tutorial.md) to add the seed step and prove it survive
 | [`@migration-preflight/adapters-postgres`](./packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
 
 No database driver or ORM dependency in the core. Add only the adapter you actually test against.
-Ships with a Drizzle source; Prisma and anything else plug in through a custom `MigrationSource`,
-see [How-to § Use with Prisma](./docs/how-to.md#use-with-prisma).
+Ships with Drizzle, Prisma, and plain-SQL-file sources; anything else plugs in through a custom
+`MigrationSource`, see
+[How-to § Add a custom `MigrationSource`](./docs/how-to.md#add-a-custom-migrationsource).
 
 ## 📚 Documentation
 
