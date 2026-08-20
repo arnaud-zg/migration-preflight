@@ -19,7 +19,7 @@
 <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white" alt="Node >=22"></a>
 <img src="https://img.shields.io/badge/core-zero%20deps-brightgreen" alt="Zero runtime deps"> <br/>
 <a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/v/migration-preflight.svg" alt="npm version"></a>
-<a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/dw/migration-preflight" alt="npm weekly downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=migration-preflight"><img src="https://img.shields.io/npm/dm/migration-preflight.svg" alt="npm downloads"></a>
 
 </div>
 

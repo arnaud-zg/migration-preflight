@@ -24,10 +24,26 @@
 <a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/v/migration-preflight.svg?label=migration-preflight" alt="migration-preflight npm version"></a>
 <a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-sqlite.svg?label=adapters-sqlite" alt="adapters-sqlite npm version"></a>
 <a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-postgres.svg?label=adapters-postgres" alt="adapters-postgres npm version"></a>
+<br/>
+<a href="https://npm-stat.com/charts.html?package=migration-preflight"><img src="https://img.shields.io/npm/dm/migration-preflight.svg?label=migration-preflight" alt="migration-preflight npm downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-sqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-sqlite.svg?label=adapters-sqlite" alt="adapters-sqlite npm downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-postgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-postgres.svg?label=adapters-postgres" alt="adapters-postgres npm downloads"></a>
 
 </div>
 
 ---
+
+## ✨ What is migration-preflight?
+
+migration-preflight is a database-agnostic testing library that helps you:
+
+- 🌱 **Seed a row before a migration runs**, then prove it's still there, and still correct, after
+- 🔴 **Catch silent data loss** before it ships, not after it already ran on real data
+- 🔌 **Test any migration tool**: Drizzle, Prisma, or plain SQL files, no custom reader needed
+- 🐘🪶 **Run against real Postgres or SQLite**, no Docker, no external server
+- 🧩 **Zero config**: point it at your migrations folder and replay
+
+> No mocks, no fixtures to maintain. Just your real migration history, replayed against real data.
 
 ## 🐛 The problem
 

@@ -20,7 +20,7 @@
 <img src="https://img.shields.io/badge/deps-zero%20runtime-brightgreen" alt="Zero runtime deps">
 <br/>
 <a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-sqlite.svg" alt="npm version"></a>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/dw/@migration-preflight/adapters-sqlite" alt="npm weekly downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-sqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-sqlite.svg" alt="npm downloads"></a>
 
 </div>
 
