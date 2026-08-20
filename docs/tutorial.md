@@ -3,10 +3,10 @@
 
 # 🚀 Getting started
 
-Seed a row, run a migration, prove the row survives. Uses the SQLite adapter and Drizzle's migration
-format: swap in `@migration-preflight/adapters-postgres` for Postgres (see
-[How-to § Pick an adapter](./how-to.md#pick-an-adapter)), or Prisma's format instead of Drizzle's
-(see [How-to § Use with Prisma](./how-to.md#use-with-prisma)).
+Seed a row, run a migration, prove the row survives. Uses the SQLite adapter; swap in
+`@migration-preflight/adapters-postgres` for Postgres (see
+[How-to § Pick an adapter](./how-to.md#pick-an-adapter)). Step 2 below covers Drizzle, Prisma, and
+plain SQL files, pick whichever matches your project.
 
 ## 1. Install
 
@@ -14,7 +14,13 @@ format: swap in `@migration-preflight/adapters-postgres` for Postgres (see
 pnpm add -D migration-preflight @migration-preflight/adapters-sqlite vitest
 ```
 
-## 2. Point it at your Drizzle migrations
+## 2. Point it at your migrations
+
+Every path below ends up producing the same thing: a `migrations` array of `{ idx, tag, sql }`.
+Steps 3–5 don't care which one you used to get there, pick whichever matches your project.
+
+<details open>
+<summary><b>Drizzle</b> — bundled, no custom code needed</summary>
 
 `drizzleFileSource` reads a Drizzle `out/` directory, the same one `drizzle-kit generate` writes:
 
@@ -47,7 +53,92 @@ CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
 ALTER TABLE users ADD COLUMN bio text;
 ```
 
+```ts
+import { drizzleFileSource } from "migration-preflight/sources";
+
+const migrations = drizzleFileSource(join(import.meta.dirname, "out"));
+```
+
+</details>
+
+<details>
+<summary><b>Prisma</b></summary>
+
+`prisma/migrations/<timestamp>_<name>/migration.sql` already sorts into the right order as plain
+strings, no journal file to parse:
+
+```
+prisma/migrations/
+├── 20240101000000_create_users/
+│   └── migration.sql
+└── 20240102000000_add_users_bio/
+    └── migration.sql
+```
+
+```ts
+// prismaFileSource.ts
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Migration, MigrationSource } from "migration-preflight/sources";
+
+export const prismaFileSource: MigrationSource = (migrationsDir) =>
+  readdirSync(migrationsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort()
+    .map((tag, idx): Migration => ({
+      idx,
+      tag,
+      sql: readFileSync(join(migrationsDir, tag, "migration.sql"), "utf8"),
+    }));
+
+const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrations"));
+```
+
+Full recipe, including which other guides apply as-is:
+[How-to § Use with Prisma](./how-to.md#use-with-prisma).
+
+</details>
+
+<details>
+<summary><b>Plain SQL files</b> — no migration tool at all</summary>
+
+A flat folder of numbered `.sql` files, sorted by filename, one statement per file:
+
+```
+migrations/
+├── 0000_create_users.sql
+└── 0001_add_users_bio.sql
+```
+
+```ts
+// sqlFileSource.ts
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Migration, MigrationSource } from "migration-preflight/sources";
+
+export const sqlFileSource: MigrationSource = (migrationsDir) =>
+  readdirSync(migrationsDir)
+    .filter((file) => file.endsWith(".sql"))
+    .sort()
+    .map((file, idx): Migration => ({
+      idx,
+      tag: file.replace(/\.sql$/, ""),
+      sql: readFileSync(join(migrationsDir, file), "utf8"),
+    }));
+
+const migrations = sqlFileSource(join(import.meta.dirname, "migrations"));
+```
+
+Full recipe, including how to handle more than one statement per file:
+[How-to § Use with plain SQL files](./how-to.md#use-with-plain-sql-files).
+
+</details>
+
 ## 3. Prove the whole history applies cleanly
+
+Using the `migrations` from step 2, shown here with Drizzle; swap in your own if you picked Prisma
+or plain SQL:
 
 ```ts
 // preflight.test.ts

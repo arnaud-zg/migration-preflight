@@ -134,14 +134,62 @@ const migrations = prismaFileSource(join(import.meta.dirname, "../prisma/migrati
 const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
 ```
 
-From here every other recipe in this guide, seeding, the smoke test, foreign key assertions, works
-unchanged: they all operate on `migrations`/`chain`, not on how those migrations were read.
+From here, seeding and foreign key assertions work unchanged: they operate on `migrations`/`chain`,
+not on how those migrations were read. The `/drizzle` smoke test above doesn't apply here, it's
+specific to Drizzle's own migration format.
+
+## Use with plain SQL files
+
+No migration tool at all, just a folder of numbered `.sql` files, sorted by filename:
+
+```
+migrations/
+├── 0000_create_users.sql
+└── 0001_add_users_bio.sql
+```
+
+```ts
+// sqlFileSource.ts
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import type { Migration, MigrationSource } from "migration-preflight/sources";
+
+export const sqlFileSource: MigrationSource = (migrationsDir) =>
+  readdirSync(migrationsDir)
+    .filter((file) => file.endsWith(".sql"))
+    .sort()
+    .map((file, idx): Migration => ({
+      idx,
+      tag: file.replace(/\.sql$/, ""),
+      sql: readFileSync(join(migrationsDir, file), "utf8"),
+    }));
+```
+
+```ts
+const migrations = sqlFileSource(join(import.meta.dirname, "migrations"));
+const chain = new MigrationChain(createNodeSqliteMigrationDatabase(), migrations);
+```
+
+One statement per file is safest. `MigrationChain` runs each migration's SQL as a single prepared
+statement, and an unmarked multi-statement file behaves differently per dialect: `node:sqlite`
+silently runs only the first statement and drops the rest, no error, while PGlite throws
+`cannot insert multiple commands into a prepared statement`. Need more than one statement in a file?
+Separate them with Drizzle's own marker, the same one `splitIntoStatements` already looks for:
+
+```sql
+CREATE TABLE users (id text PRIMARY KEY, email text NOT NULL);
+--> statement-breakpoint
+CREATE INDEX users_email_idx ON users (email);
+```
+
+Seeding and foreign key assertions work unchanged here too; the `/drizzle` smoke test doesn't apply,
+same reason as Prisma above.
 
 ## Add a custom `MigrationSource`
 
 The core package only depends on the `MigrationSource` port
 (`(migrationsDir: string) => readonly Migration[]`). Write your own for any other migration format
-(Knex, TypeORM, a raw SQL folder), the same way `prismaFileSource` does above:
+(Knex, TypeORM, or anything else), the same way `prismaFileSource` and `sqlFileSource` do above:
 
 ```ts
 import type { Migration, MigrationSource } from "migration-preflight/sources";
