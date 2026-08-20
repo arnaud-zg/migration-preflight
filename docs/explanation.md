@@ -21,13 +21,15 @@ production has rows, and check it's still correct after. Seed, migrate, verify, 
   (`.` vs `./drizzle`) for the same reason at a smaller scale: the raw adapter never requires
   installing `drizzle-orm`, only `./drizzle` does.
 
-## Why there's no built-in Prisma source
+## Why there's no built-in Prisma or plain-SQL source
 
 `drizzleFileSource` ships because Drizzle's format needs real parsing: a `_journal.json` maps each
 migration's `idx`/`tag`, separate from the `.sql` files it points at. Prisma's format doesn't, each
 `prisma/migrations/<timestamp>_<name>/migration.sql` folder already sorts into the right order as a
-plain string. Reading it is a `readdirSync` and a `readFileSync`, not parsing logic worth a
-dependency or a maintained export, see [How-to § Use with Prisma](./how-to.md#use-with-prisma).
+plain string; a flat folder of numbered `.sql` files sorts the same way, one level shallower still.
+Reading either is a `readdirSync` and a `readFileSync`, not parsing logic worth a dependency or a
+maintained export, see [How-to § Use with Prisma](./how-to.md#use-with-prisma) and
+[How-to § Use with plain SQL files](./how-to.md#use-with-plain-sql-files).
 
 ## Why `MigrationDatabase` operations can be sync or async
 
