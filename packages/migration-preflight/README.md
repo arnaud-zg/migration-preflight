@@ -68,16 +68,18 @@ await chain.applyThrough(migrations.at(-1)!.idx, () => []);
 The payoff, catching a migration that silently drops data, comes from seeding a row between two
 migrations. See [Seeding between migrations](#seeding-between-migrations) below.
 
-## Packages
+## 📦 Packages
 
 This package is the dialect-agnostic core: the replay engine and the ports it runs against. No
 database driver, no ORM dependency.
 
-| Package                                                                              | What it's for                 |
-| ------------------------------------------------------------------------------------ | ----------------------------- |
-| `migration-preflight`                                                                | Core: replay engine, ports    |
-| [`@migration-preflight/adapters-sqlite`](../migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/adapters-postgres`](../migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+| Package                                                                                                                                               | What it's for                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `migration-preflight`                                                                                                                                 | Core: replay engine, ports    |
+| [`@migration-preflight/adapters-sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/adapters-postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+
+_`migration-preflight` isn't linked above: that's this package._
 
 ## Seeding between migrations
 
@@ -93,8 +95,9 @@ expect(await chain.hasRow("users", "user-1")).toBe(true);
 expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
-See [How-to § Seed a row between migrations](../../docs/how-to.md#seed-a-row-between-migrations) for
-the full recipe, including the `Seed` type and the `seedsAfter` helper.
+See
+[How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#seed-a-row-between-migrations)
+for the full recipe, including the `Seed` type and the `seedsAfter` helper.
 
 ## Integrating with Drizzle, SQLite, and Postgres
 
@@ -107,7 +110,17 @@ ports. Concrete support comes from two other packages:
   supply a `MigrationDatabase` and, behind a `/drizzle` subpath, a thin wrapper over Drizzle's own
   migrator for a quick "does it apply cleanly" check.
 
-See the [full documentation](../../docs/) for a tutorial, more recipes, and the API reference.
+## 📚 Documentation
+
+- 🚀 **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/tutorial.md)**:
+  seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md)**:
+  task recipes.
+- 📖 **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/reference.md)**:
+  API and package layout.
+- 💡
+  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md)**:
+  design rationale.
 
 ## Contributing
 

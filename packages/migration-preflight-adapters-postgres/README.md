@@ -26,9 +26,10 @@
 
 ---
 
-The Postgres driver for [`migration-preflight`](../migration-preflight). A migration that silently
-drops or corrupts data usually only fails once it meets real data, and by then it already ran. This
-package is what lets that test run against Postgres.
+The Postgres driver for
+[`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight).
+A migration that silently drops or corrupts data usually only fails once it meets real data, and by
+then it already ran. This package is what lets that test run against Postgres.
 
 Backed by [PGlite](https://pglite.dev), an in-memory WASM Postgres. No Docker, no external server,
 no network. It boots in milliseconds.
@@ -78,25 +79,45 @@ await chain.applyThrough(migrations.at(-1)!.idx, () => []);
 
 `foreignKeyViolations()` always returns `[]` on Postgres; a violation surfaces as a thrown error
 from the `run`/`transaction` call that caused it instead. See
-[Explanation](../../docs/explanation.md#why-foreignkeyviolations-always-returns--on-postgres) for
-why, and
-[How-to § Assert on foreign key integrity](../../docs/how-to.md#assert-on-foreign-key-integrity) for
-how to test it.
+[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md#why-foreignkeyviolations-always-returns--on-postgres)
+for why, and
+[How-to § Assert on foreign key integrity](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#assert-on-foreign-key-integrity)
+for how to test it.
 
 ## Postgres extensions (e.g. `pg_trgm`)
 
 If a migration runs `CREATE EXTENSION ...`, PGlite needs that extension loaded up front, by building
 the client yourself and passing it in. See
-[How-to § Load Postgres extensions](../../docs/how-to.md#load-postgres-extensions-eg-pg_trgm) for
-the recipe.
+[How-to § Load Postgres extensions](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#load-postgres-extensions-eg-pg_trgm)
+for the recipe.
 
 ## Known issue: high memory use in tests
 
 Each PGlite instance is a full WASM-compiled Postgres, roughly 700MB+ peak RSS on its own. See
-[Explanation](../../docs/explanation.md#known-issue-pglite-memory-use-in-tests) for why, and how
-this package's own test suite works around it.
+[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md#known-issue-pglite-memory-use-in-tests)
+for why, and how this package's own test suite works around it.
 
-See the [full documentation](../../docs/) for a tutorial, more recipes, and the API reference.
+## 📦 Packages
+
+| Package                                                                                                                                           | What it's for                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                                  | Core: replay engine, ports    |
+| [`@migration-preflight/adapters-sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-sqlite) | SQLite driver (`node:sqlite`) |
+| `@migration-preflight/adapters-postgres`                                                                                                          | Postgres driver (PGlite)      |
+
+_`@migration-preflight/adapters-postgres` isn't linked above: that's this package._
+
+## 📚 Documentation
+
+- 🚀 **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/tutorial.md)**:
+  seed a row, run a migration, prove it survives.
+- 🛠️ **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md)**:
+  task recipes.
+- 📖 **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/reference.md)**:
+  API and package layout.
+- 💡
+  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md)**:
+  design rationale.
 
 ## Contributing
 
