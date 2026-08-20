@@ -9,6 +9,7 @@
     "testing",
     "preflight",
     "drizzle",
+    "prisma",
     "data-safety"
   ],
   "homepage": "https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight#readme",

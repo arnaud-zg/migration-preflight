@@ -78,16 +78,16 @@ Every operation may be sync or async, so one `MigrationChain` drives both a sync
 
 ### `migration-preflight/sources`
 
-| Export                           | Signature                                               |
-| -------------------------------- | ------------------------------------------------------- |
-| `drizzleFileSource`              | `MigrationSource`, reads a Drizzle `out/` directory     |
-| `loadMigrationsFromDisk(outDir)` | `(outDir: string) => Migration[]`, same, named directly |
-| `MigrationSource` (type)         | `(migrationsDir: string) => readonly Migration[]`       |
+| Export                           | Signature                                                        |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `drizzleFileSource`              | `MigrationSource`, reads a Drizzle `out/` directory              |
+| `loadMigrationsFromDisk(outDir)` | `(outDir: string) => Migration[]`, same, named directly          |
+| `prismaFileSource`               | `MigrationSource`, reads a Prisma `prisma/migrations/` directory |
+| `sqlFileSource`                  | `MigrationSource`, reads a flat folder of `<tag>.sql` files      |
+| `MigrationSource` (type)         | `(migrationsDir: string) => readonly Migration[]`                |
 
-Prisma, plain SQL files, or any other migration tool, isn't a bundled export: write your own
-`MigrationSource` instead of `drizzleFileSource`, see
-[How-to § Use with Prisma](./how-to.md#use-with-prisma) or
-[How-to § Use with plain SQL files](./how-to.md#use-with-plain-sql-files).
+Any other migration tool isn't a bundled export: write your own `MigrationSource`, see
+[How-to § Add a custom `MigrationSource`](./how-to.md#add-a-custom-migrationsource).
 
 ## `@migration-preflight/adapters-sqlite` API
 
