@@ -1,6 +1,6 @@
 {
   "name": "migration-preflight",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Test database migrations before you ship them: plant a row, run the migration, verify it survives.",
   "keywords": [
     "migration",
