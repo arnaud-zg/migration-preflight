@@ -1,5 +1,14 @@
 # @migration-preflight/postgres
 
+## 0.3.0
+
+### Minor Changes
+
+- [#27](https://github.com/arnaud-zg/migration-preflight/pull/27) [`dce258c`](https://github.com/arnaud-zg/migration-preflight/commit/dce258c88c10678d16a2babccaa16daa566299a3) Thanks [@arnaud-zg](https://github.com/arnaud-zg)! - Rename `@migration-preflight/adapters-sqlite` to `@migration-preflight/sqlite` and
+  `@migration-preflight/adapters-postgres` to `@migration-preflight/postgres`. Same API and same
+  `./drizzle` subpath: replace the package name in your install command and imports. The old names are
+  deprecated on npm.
+
 > Formerly published as `@migration-preflight/adapters-postgres`. Entries up to 0.2.0 were released under that name.
 
 ## 0.2.0
