@@ -1,5 +1,12 @@
 # @migration-preflight/sqlite
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`d15ed97`](https://github.com/arnaud-zg/migration-preflight/commit/d15ed9733c5834d93bcbd2984501237a545fcdc4)]:
+  - migration-preflight@0.2.1
+
 ## 0.3.0
 
 ### Minor Changes

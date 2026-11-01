@@ -1,6 +1,6 @@
 {
   "name": "@migration-preflight/sqlite",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "node:sqlite driver for migration-preflight: test your SQLite migrations with zero runtime dependencies.",
   "keywords": [
     "migration",

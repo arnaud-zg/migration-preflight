@@ -1,5 +1,12 @@
 # migration-preflight
 
+## 0.2.1
+
+### Patch Changes
+
+- [#29](https://github.com/arnaud-zg/migration-preflight/pull/29) [`d15ed97`](https://github.com/arnaud-zg/migration-preflight/commit/d15ed9733c5834d93bcbd2984501237a545fcdc4) Thanks [@arnaud-zg](https://github.com/arnaud-zg)! - Update the README to the renamed adapters: `@migration-preflight/sqlite` and
+  `@migration-preflight/postgres`.
+
 ## 0.2.0
 
 ### Minor Changes
