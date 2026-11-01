@@ -51,11 +51,11 @@ have broken something.
 ## Quick start
 
 ```sh
-pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
+pnpm add -D migration-preflight @migration-preflight/sqlite
 ```
 
 ```ts
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
+import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite"; // or -postgres
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
 
@@ -73,11 +73,11 @@ migrations. See [Seeding between migrations](#seeding-between-migrations) below.
 This package is the dialect-agnostic core: the replay engine and the ports it runs against. No
 database driver, no ORM dependency.
 
-| Package                                                                                                                                               | What it's for                 |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `migration-preflight`                                                                                                                                 | Core: replay engine, ports    |
-| [`@migration-preflight/adapters-sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/adapters-postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+| Package                                                                                                                             | What it's for                 |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `migration-preflight`                                                                                                               | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-sqlite)     | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-postgres) | Postgres driver (PGlite)      |
 
 _`migration-preflight` isn't linked above: that's this package._
 
@@ -118,9 +118,9 @@ ports. Concrete support comes from two other packages, plus three bundled source
   `migration-preflight/sources`) each read a different migrations layout, Drizzle's journal,
   Prisma's `migrations/` folder, or a flat folder of `.sql` files, into the `Migration[]` this
   package replays.
-- **`@migration-preflight/adapters-sqlite`** and **`@migration-preflight/adapters-postgres`** each
-  supply a `MigrationDatabase` and, behind a `/drizzle` subpath, a thin wrapper over Drizzle's own
-  migrator for a quick "does it apply cleanly" check.
+- **`@migration-preflight/sqlite`** and **`@migration-preflight/postgres`** each supply a
+  `MigrationDatabase` and, behind a `/drizzle` subpath, a thin wrapper over Drizzle's own migrator
+  for a quick "does it apply cleanly" check.
 
 ## 📚 Documentation
 
