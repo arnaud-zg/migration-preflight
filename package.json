@@ -14,7 +14,7 @@
     "prepare": "lefthook install",
     "release": "pnpm build && changeset publish",
     "release:notes": "node scripts/release-notes.mjs",
-    "test": "pnpm -r run test && pnpm --filter @migration-preflight/adapters-postgres run test:db",
+    "test": "pnpm -r run test && pnpm --filter @migration-preflight/postgres run test:db",
     "typecheck": "pnpm -r run typecheck",
     "verify": "pnpm typecheck && pnpm lint && pnpm lint:md && pnpm format:check && pnpm test && pnpm build",
     "version": "changeset version"

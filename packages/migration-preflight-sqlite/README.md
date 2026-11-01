@@ -1,4 +1,4 @@
-# 🪶 @migration-preflight/adapters-sqlite
+# 🪶 @migration-preflight/sqlite
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arnaud-zg/migration-preflight/main/assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
@@ -19,8 +19,8 @@
 <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white" alt="Node >=22"></a>
 <img src="https://img.shields.io/badge/deps-zero%20runtime-brightgreen" alt="Zero runtime deps">
 <br/>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-sqlite.svg" alt="npm version"></a>
-<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-sqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-sqlite.svg" alt="npm downloads"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/sqlite.svg" alt="npm version"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fsqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/sqlite.svg" alt="npm downloads"></a>
 
 </div>
 
@@ -36,30 +36,30 @@ requires installing or configuring anything else.
 
 ```mermaid
 flowchart LR
-    Core["migration-preflight<br/>(replay engine)"] --> Sqlite["@migration-preflight/adapters-sqlite<br/>(node:sqlite)"]
+    Core["migration-preflight<br/>(replay engine)"] --> Sqlite["@migration-preflight/sqlite<br/>(node:sqlite)"]
     Sqlite --> Test["Your migrations,<br/>tested with real data"]
 ```
 
 ## Install
 
 ```sh
-pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
+pnpm add -D migration-preflight @migration-preflight/sqlite
 ```
 
 ## Two entry points
 
 So a consumer of the raw driver never has to install `drizzle-orm` / `better-sqlite3`:
 
-| Import                                         | Use it for                                              |
-| ---------------------------------------------- | ------------------------------------------------------- |
-| `@migration-preflight/adapters-sqlite`         | Seed-between-migrations tests, the one that matters     |
-| `@migration-preflight/adapters-sqlite/drizzle` | Quick "does the whole history apply cleanly" smoke test |
+| Import                                | Use it for                                              |
+| ------------------------------------- | ------------------------------------------------------- |
+| `@migration-preflight/sqlite`         | Seed-between-migrations tests, the one that matters     |
+| `@migration-preflight/sqlite/drizzle` | Quick "does the whole history apply cleanly" smoke test |
 
 ```ts
 // Seed-between-migrations test
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite";
+import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite";
 // Quick smoke test
-import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/adapters-sqlite/drizzle";
+import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/sqlite/drizzle";
 ```
 
 ## Usage
@@ -67,7 +67,7 @@ import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/adapters-
 Works with any bundled migration source, Drizzle, Prisma, or plain SQL files:
 
 ```ts
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite";
+import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite";
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource, prismaFileSource, sqlFileSource } from "migration-preflight/sources";
 
@@ -86,13 +86,13 @@ for what each folder layout looks like.
 
 ## 📦 Packages
 
-| Package                                                                                                                                               | What it's for                 |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                                      | Core: replay engine, ports    |
-| `@migration-preflight/adapters-sqlite`                                                                                                                | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/adapters-postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+| Package                                                                                                                             | What it's for                 |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                    | Core: replay engine, ports    |
+| `@migration-preflight/sqlite`                                                                                                       | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-postgres) | Postgres driver (PGlite)      |
 
-_`@migration-preflight/adapters-sqlite` isn't linked above: that's this package._
+_`@migration-preflight/sqlite` isn't linked above: that's this package._
 
 ## 📚 Documentation
 
@@ -109,9 +109,9 @@ _`@migration-preflight/adapters-sqlite` isn't linked above: that's this package.
 ## Contributing
 
 ```bash
-pnpm --filter @migration-preflight/adapters-sqlite test        # run the test suite
-pnpm --filter @migration-preflight/adapters-sqlite typecheck   # type-check
-pnpm --filter @migration-preflight/adapters-sqlite lint        # eslint
+pnpm --filter @migration-preflight/sqlite test        # run the test suite
+pnpm --filter @migration-preflight/sqlite typecheck   # type-check
+pnpm --filter @migration-preflight/sqlite lint        # eslint
 ```
 
 ## License

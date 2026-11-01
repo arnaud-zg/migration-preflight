@@ -1,4 +1,4 @@
-# 🐘 @migration-preflight/adapters-postgres
+# 🐘 @migration-preflight/postgres
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arnaud-zg/migration-preflight/main/assets/icon.png" width="128" height="128" alt="migration-preflight logo" />
@@ -19,8 +19,8 @@
 <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white" alt="Node >=22"></a>
 <img src="https://img.shields.io/badge/PGlite-no%20Docker-336791" alt="Backed by PGlite, no Docker needed">
 <br/>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-postgres.svg" alt="npm version"></a>
-<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-postgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-postgres.svg" alt="npm downloads"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/postgres.svg" alt="npm version"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fpostgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/postgres.svg" alt="npm downloads"></a>
 
 </div>
 
@@ -36,30 +36,30 @@ no network. It boots in milliseconds.
 
 ```mermaid
 flowchart LR
-    Core["migration-preflight<br/>(replay engine)"] --> Pg["@migration-preflight/adapters-postgres<br/>(PGlite)"]
+    Core["migration-preflight<br/>(replay engine)"] --> Pg["@migration-preflight/postgres<br/>(PGlite)"]
     Pg --> Test["Your migrations,<br/>tested with real data"]
 ```
 
 ## Install
 
 ```sh
-pnpm add -D migration-preflight @migration-preflight/adapters-postgres
+pnpm add -D migration-preflight @migration-preflight/postgres
 ```
 
 ## Two entry points
 
 So a consumer of the raw driver never has to install `drizzle-orm`:
 
-| Import                                           | Use it for                                              |
-| ------------------------------------------------ | ------------------------------------------------------- |
-| `@migration-preflight/adapters-postgres`         | Seed-between-migrations tests, the one that matters     |
-| `@migration-preflight/adapters-postgres/drizzle` | Quick "does the whole history apply cleanly" smoke test |
+| Import                                  | Use it for                                              |
+| --------------------------------------- | ------------------------------------------------------- |
+| `@migration-preflight/postgres`         | Seed-between-migrations tests, the one that matters     |
+| `@migration-preflight/postgres/drizzle` | Quick "does the whole history apply cleanly" smoke test |
 
 ```ts
 // Seed-between-migrations test
-import { createPgliteMigrationDatabase } from "@migration-preflight/adapters-postgres";
+import { createPgliteMigrationDatabase } from "@migration-preflight/postgres";
 // Quick smoke test
-import { runDrizzlePgliteMigrations } from "@migration-preflight/adapters-postgres/drizzle";
+import { runDrizzlePgliteMigrations } from "@migration-preflight/postgres/drizzle";
 ```
 
 ## Usage
@@ -67,7 +67,7 @@ import { runDrizzlePgliteMigrations } from "@migration-preflight/adapters-postgr
 Works with any bundled migration source, Drizzle, Prisma, or plain SQL files:
 
 ```ts
-import { createPgliteMigrationDatabase } from "@migration-preflight/adapters-postgres";
+import { createPgliteMigrationDatabase } from "@migration-preflight/postgres";
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource, prismaFileSource, sqlFileSource } from "migration-preflight/sources";
 
@@ -108,13 +108,13 @@ for why, and how this package's own test suite works around it.
 
 ## 📦 Packages
 
-| Package                                                                                                                                           | What it's for                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                                  | Core: replay engine, ports    |
-| [`@migration-preflight/adapters-sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-sqlite) | SQLite driver (`node:sqlite`) |
-| `@migration-preflight/adapters-postgres`                                                                                                          | Postgres driver (PGlite)      |
+| Package                                                                                                                         | What it's for                 |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-sqlite) | SQLite driver (`node:sqlite`) |
+| `@migration-preflight/postgres`                                                                                                 | Postgres driver (PGlite)      |
 
-_`@migration-preflight/adapters-postgres` isn't linked above: that's this package._
+_`@migration-preflight/postgres` isn't linked above: that's this package._
 
 ## 📚 Documentation
 
@@ -131,9 +131,9 @@ _`@migration-preflight/adapters-postgres` isn't linked above: that's this packag
 ## Contributing
 
 ```bash
-pnpm --filter @migration-preflight/adapters-postgres test:db        # run the test suite
-pnpm --filter @migration-preflight/adapters-postgres typecheck      # type-check
-pnpm --filter @migration-preflight/adapters-postgres lint           # eslint
+pnpm --filter @migration-preflight/postgres test:db        # run the test suite
+pnpm --filter @migration-preflight/postgres typecheck      # type-check
+pnpm --filter @migration-preflight/postgres lint           # eslint
 ```
 
 ## License

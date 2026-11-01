@@ -22,12 +22,12 @@
 <img src="https://img.shields.io/badge/core-zero%20deps-brightgreen" alt="Zero runtime deps in the core">
 <br/>
 <a href="https://www.npmjs.com/package/migration-preflight"><img src="https://img.shields.io/npm/v/migration-preflight.svg?label=migration-preflight" alt="migration-preflight npm version"></a>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-sqlite.svg?label=adapters-sqlite" alt="adapters-sqlite npm version"></a>
-<a href="https://www.npmjs.com/package/@migration-preflight/adapters-postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/adapters-postgres.svg?label=adapters-postgres" alt="adapters-postgres npm version"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/sqlite"><img src="https://img.shields.io/npm/v/@migration-preflight/sqlite.svg?label=sqlite" alt="sqlite npm version"></a>
+<a href="https://www.npmjs.com/package/@migration-preflight/postgres"><img src="https://img.shields.io/npm/v/@migration-preflight/postgres.svg?label=postgres" alt="postgres npm version"></a>
 <br/>
 <a href="https://npm-stat.com/charts.html?package=migration-preflight"><img src="https://img.shields.io/npm/dm/migration-preflight.svg?label=migration-preflight" alt="migration-preflight npm downloads"></a>
-<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-sqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-sqlite.svg?label=adapters-sqlite" alt="adapters-sqlite npm downloads"></a>
-<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fadapters-postgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/adapters-postgres.svg?label=adapters-postgres" alt="adapters-postgres npm downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fsqlite"><img src="https://img.shields.io/npm/dm/@migration-preflight/sqlite.svg?label=sqlite" alt="sqlite npm downloads"></a>
+<a href="https://npm-stat.com/charts.html?package=%40migration-preflight%2Fpostgres"><img src="https://img.shields.io/npm/dm/@migration-preflight/postgres.svg?label=postgres" alt="postgres npm downloads"></a>
 
 </div>
 
@@ -70,12 +70,12 @@ broken something.
 ## ⚡ Quick start
 
 ```sh
-pnpm add -D migration-preflight @migration-preflight/adapters-sqlite
+pnpm add -D migration-preflight @migration-preflight/sqlite
 ```
 
 ```ts
 import type { SqlStatement } from "migration-preflight";
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite"; // or -postgres
+import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite"; // or -postgres
 import { MigrationChain, renderInsert } from "migration-preflight";
 import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
 
@@ -101,11 +101,11 @@ full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten ca
 
 ## 📦 Packages
 
-| Package                                                                                      | What it's for                 |
-| -------------------------------------------------------------------------------------------- | ----------------------------- |
-| [`migration-preflight`](./packages/migration-preflight)                                      | Core: replay engine, ports    |
-| [`@migration-preflight/adapters-sqlite`](./packages/migration-preflight-adapters-sqlite)     | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/adapters-postgres`](./packages/migration-preflight-adapters-postgres) | Postgres driver (PGlite)      |
+| Package                                                                    | What it's for                 |
+| -------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](./packages/migration-preflight)                    | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](./packages/migration-preflight-sqlite)     | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/postgres`](./packages/migration-preflight-postgres) | Postgres driver (PGlite)      |
 
 No database driver or ORM dependency in the core. Add only the adapter you actually test against.
 Ships with Drizzle, Prisma, and plain-SQL-file sources; anything else plugs in through a custom

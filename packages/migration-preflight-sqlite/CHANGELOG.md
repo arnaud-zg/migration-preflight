@@ -1,4 +1,6 @@
-# @migration-preflight/adapters-sqlite
+# @migration-preflight/sqlite
+
+> Formerly published as `@migration-preflight/adapters-sqlite`. Entries up to 0.2.0 were released under that name.
 
 ## 0.2.0
 

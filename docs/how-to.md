@@ -5,10 +5,10 @@
 
 ## Pick an adapter
 
-| You're testing | Install                                  | Zero runtime deps?                                                    |
-| -------------- | ---------------------------------------- | --------------------------------------------------------------------- |
-| SQLite         | `@migration-preflight/adapters-sqlite`   | Yes, `node:sqlite` is a Node builtin                                  |
-| Postgres       | `@migration-preflight/adapters-postgres` | No, pulls in [PGlite](https://pglite.dev), an in-memory WASM Postgres |
+| You're testing | Install                         | Zero runtime deps?                                                    |
+| -------------- | ------------------------------- | --------------------------------------------------------------------- |
+| SQLite         | `@migration-preflight/sqlite`   | Yes, `node:sqlite` is a Node builtin                                  |
+| Postgres       | `@migration-preflight/postgres` | No, pulls in [PGlite](https://pglite.dev), an in-memory WASM Postgres |
 
 Both are dev dependencies. Install only the one matching your database.
 
@@ -102,7 +102,7 @@ replay, so it needs `drizzle-orm`:
 
 ```ts
 // SQLite
-import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/adapters-sqlite/drizzle";
+import { runDrizzleBetterSqliteMigrations } from "@migration-preflight/sqlite/drizzle";
 
 await expect(() =>
   runDrizzleBetterSqliteMigrations({ migrationsFolder: join(import.meta.dirname, "out") }),
@@ -111,7 +111,7 @@ await expect(() =>
 
 ```ts
 // Postgres
-import { runDrizzlePgliteMigrations } from "@migration-preflight/adapters-postgres/drizzle";
+import { runDrizzlePgliteMigrations } from "@migration-preflight/postgres/drizzle";
 
 await expect(
   runDrizzlePgliteMigrations({ migrationsFolder: join(import.meta.dirname, "out") }),
@@ -172,8 +172,8 @@ Or scope to one package:
 
 ```sh
 pnpm --filter migration-preflight test
-pnpm --filter @migration-preflight/adapters-sqlite test
-pnpm --filter @migration-preflight/adapters-postgres test:db
+pnpm --filter @migration-preflight/sqlite test
+pnpm --filter @migration-preflight/postgres test:db
 ```
 
 Known issue: running the Postgres adapter's tests alongside other heavy suites can still push CI
@@ -210,11 +210,11 @@ Copy this into the PR description, filling in the version column from the `packa
 ```markdown
 ## Releases
 
-| Package                                  | Version |
-| ---------------------------------------- | ------- |
-| `migration-preflight`                    | 0.0.0   |
-| `@migration-preflight/adapters-sqlite`   | 0.0.0   |
-| `@migration-preflight/adapters-postgres` | 0.0.0   |
+| Package                         | Version |
+| ------------------------------- | ------- |
+| `migration-preflight`           | 0.0.0   |
+| `@migration-preflight/sqlite`   | 0.0.0   |
+| `@migration-preflight/postgres` | 0.0.0   |
 ```
 
 Review the diff (version bumps + `CHANGELOG.md`) and merge it like any other PR.

@@ -5,14 +5,14 @@
 
 ## Packages and exports
 
-| Package                                  | Subpath     | Resolves to       | Needs                                     |
-| ---------------------------------------- | ----------- | ----------------- | ----------------------------------------- |
-| `migration-preflight`                    | `.`         | `dist/index.js`   | nothing (zero runtime deps)               |
-| `migration-preflight`                    | `./sources` | `dist/sources.js` | `node:fs` / `node:path` only              |
-| `@migration-preflight/adapters-sqlite`   | `.`         | `dist/index.js`   | nothing (`node:sqlite` is a Node builtin) |
-| `@migration-preflight/adapters-sqlite`   | `./drizzle` | `dist/drizzle.js` | `drizzle-orm`, `better-sqlite3`           |
-| `@migration-preflight/adapters-postgres` | `.`         | `dist/index.js`   | `@electric-sql/pglite`                    |
-| `@migration-preflight/adapters-postgres` | `./drizzle` | `dist/drizzle.js` | `@electric-sql/pglite`, `drizzle-orm`     |
+| Package                         | Subpath     | Resolves to       | Needs                                     |
+| ------------------------------- | ----------- | ----------------- | ----------------------------------------- |
+| `migration-preflight`           | `.`         | `dist/index.js`   | nothing (zero runtime deps)               |
+| `migration-preflight`           | `./sources` | `dist/sources.js` | `node:fs` / `node:path` only              |
+| `@migration-preflight/sqlite`   | `.`         | `dist/index.js`   | nothing (`node:sqlite` is a Node builtin) |
+| `@migration-preflight/sqlite`   | `./drizzle` | `dist/drizzle.js` | `drizzle-orm`, `better-sqlite3`           |
+| `@migration-preflight/postgres` | `.`         | `dist/index.js`   | `@electric-sql/pglite`                    |
+| `@migration-preflight/postgres` | `./drizzle` | `dist/drizzle.js` | `@electric-sql/pglite`, `drizzle-orm`     |
 
 `drizzle-orm` and `better-sqlite3` are optional peer deps on the adapters, install at whatever
 version your project already uses. Only the `./drizzle` subpath needs them.
@@ -94,7 +94,7 @@ Every operation may be sync or async, so one `MigrationChain` drives both a sync
 Any other migration tool isn't a bundled export: write your own `MigrationSource`, see
 [How-to § Add a custom `MigrationSource`](./how-to.md#add-a-custom-migrationsource).
 
-## `@migration-preflight/adapters-sqlite` API
+## `@migration-preflight/sqlite` API
 
 | Export                                                         | From        |
 | -------------------------------------------------------------- | ----------- |
@@ -104,7 +104,7 @@ Any other migration tool isn't a bundled export: write your own `MigrationSource
 `dialect.placeholder` renders SQLite's `?`. `foreignKeyViolations()` runs
 `PRAGMA foreign_key_check`.
 
-## `@migration-preflight/adapters-postgres` API
+## `@migration-preflight/postgres` API
 
 | Export                                                                     | From        |
 | -------------------------------------------------------------------------- | ----------- |
@@ -125,10 +125,10 @@ packages/
   migration-preflight/                       core: replay engine + ports (zero runtime deps)
     src/domain/migrations/                    MigrationChain, ports, migrationSql
     src/sources/                              drizzleFileSource (the "./sources" entry point)
-  migration-preflight-adapters-sqlite/        node:sqlite adapter
+  migration-preflight-sqlite/        node:sqlite adapter
     src/nodeSqliteMigrationDatabase.adapter.ts  the raw MigrationDatabase adapter
     src/drizzleBetterSqliteRunner.ts            the "./drizzle" apply-clean runner
-  migration-preflight-adapters-postgres/      PGlite adapter
+  migration-preflight-postgres/      PGlite adapter
     src/pgliteMigrationDatabase.adapter.ts      the raw MigrationDatabase adapter
     src/drizzlePgliteRunner.ts                  the "./drizzle" apply-clean runner
 docs/                                        this documentation

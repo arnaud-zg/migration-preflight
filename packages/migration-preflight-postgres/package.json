@@ -1,25 +1,26 @@
 {
-  "name": "@migration-preflight/adapters-sqlite",
+  "name": "@migration-preflight/postgres",
   "version": "0.2.0",
-  "description": "node:sqlite driver for migration-preflight: test your SQLite migrations with zero runtime dependencies.",
+  "description": "PGlite (in-memory WASM Postgres) driver for migration-preflight: test your Postgres migrations with no Docker, no external server.",
   "keywords": [
     "migration",
     "database",
-    "sqlite",
-    "node-sqlite",
+    "postgres",
+    "postgresql",
+    "pglite",
     "testing",
     "preflight",
     "drizzle",
     "data-safety"
   ],
-  "homepage": "https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-adapters-sqlite#readme",
+  "homepage": "https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-postgres#readme",
   "bugs": {
     "url": "https://github.com/arnaud-zg/migration-preflight/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arnaud-zg/migration-preflight.git",
-    "directory": "packages/migration-preflight-adapters-sqlite"
+    "directory": "packages/migration-preflight-postgres"
   },
   "license": "MIT",
   "author": "Arnaud Zheng <arnaud.zg@gmail.com>",
@@ -43,18 +44,17 @@
     "format": "prettier --write . --ignore-path ../../.prettierignore --cache --cache-location .cache/.prettiercache",
     "lint": "eslint --cache --cache-location .cache/.eslintcache",
     "prepublishOnly": "pnpm run build",
-    "test": "vitest run",
+    "test:db": "vitest run",
     "typecheck": "tsc -p tsconfig.typecheck.json"
   },
   "prettier": "@arnaud-zg/configs/prettier",
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.4",
     "migration-preflight": "workspace:*"
   },
   "devDependencies": {
     "@arnaud-zg/configs": "catalog:",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "catalog:node",
-    "better-sqlite3": "12.5.0",
     "drizzle-orm": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
@@ -63,13 +63,9 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "better-sqlite3": "12.5.0",
     "drizzle-orm": "0.45.2"
   },
   "peerDependenciesMeta": {
-    "better-sqlite3": {
-      "optional": true
-    },
     "drizzle-orm": {
       "optional": true
     }

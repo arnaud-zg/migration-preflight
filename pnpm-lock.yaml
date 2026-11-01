@@ -148,7 +148,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(@types/node@22.20.1)(vite@8.2.1(@types/node@22.20.1)(jiti@2.6.1)(yaml@2.9.0))
 
-  packages/migration-preflight-adapters-postgres:
+  packages/migration-preflight-postgres:
     dependencies:
       '@electric-sql/pglite':
         specifier: ^0.5.4
@@ -182,7 +182,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(@types/node@22.20.1)(vite@8.2.1(@types/node@22.20.1)(jiti@2.6.1)(yaml@2.9.0))
 
-  packages/migration-preflight-adapters-sqlite:
+  packages/migration-preflight-sqlite:
     dependencies:
       migration-preflight:
         specifier: workspace:*

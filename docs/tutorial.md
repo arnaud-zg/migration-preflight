@@ -4,14 +4,14 @@
 # 🚀 Getting started
 
 Seed a row, run a migration, prove the row survives. Uses the SQLite adapter; swap in
-`@migration-preflight/adapters-postgres` for Postgres (see
+`@migration-preflight/postgres` for Postgres (see
 [How-to § Pick an adapter](./how-to.md#pick-an-adapter)). Step 2 below covers Drizzle, Prisma, and
 plain SQL files, pick whichever matches your project.
 
 ## 1. Install
 
 ```sh
-pnpm add -D migration-preflight @migration-preflight/adapters-sqlite vitest
+pnpm add -D migration-preflight @migration-preflight/sqlite vitest
 ```
 
 ## 2. Point it at your migrations
@@ -122,7 +122,7 @@ plain SQL:
 ```ts
 // preflight.test.ts
 import { join } from "node:path";
-import { createNodeSqliteMigrationDatabase } from "@migration-preflight/adapters-sqlite";
+import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite";
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource } from "migration-preflight/sources";
 import { describe, expect, it } from "vitest";
