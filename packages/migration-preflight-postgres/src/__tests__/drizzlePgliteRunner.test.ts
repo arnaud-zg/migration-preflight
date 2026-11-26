@@ -23,4 +23,13 @@ describe("runDrizzlePgliteMigrations", () => {
     // Not closed by the runner — the caller owns a client it supplied.
     expect(sharedClient.closed).toBe(false);
   });
+
+  it("fails when a migration does not apply", async () => {
+    await resetSchema();
+    const migrationsFolder = join(import.meta.dirname, "fixtures", "broken-migrations");
+
+    await expect(
+      runDrizzlePgliteMigrations({ migrationsFolder, client: sharedClient }),
+    ).rejects.toThrow();
+  });
 });

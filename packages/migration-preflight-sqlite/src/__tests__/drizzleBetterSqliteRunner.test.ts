@@ -3,10 +3,18 @@ import { describe, expect, it } from "vitest";
 
 import { runDrizzleBetterSqliteMigrations } from "../drizzleBetterSqliteRunner";
 
+const fixture = (name: string): string => join(import.meta.dirname, "fixtures", name);
+
 describe("runDrizzleBetterSqliteMigrations", () => {
   it("applies every migration cleanly through drizzle's own migrator", () => {
-    const migrationsFolder = join(import.meta.dirname, "fixtures", "migrations");
+    expect(() =>
+      runDrizzleBetterSqliteMigrations({ migrationsFolder: fixture("migrations") }),
+    ).not.toThrow();
+  });
 
-    expect(() => runDrizzleBetterSqliteMigrations({ migrationsFolder })).not.toThrow();
+  it("fails when a migration does not apply", () => {
+    expect(() =>
+      runDrizzleBetterSqliteMigrations({ migrationsFolder: fixture("broken-migrations") }),
+    ).toThrow();
   });
 });

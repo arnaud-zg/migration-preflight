@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# Stryker: vitest runner setup file, left beside the package when mutating in place
+stryker-setup-*.js
