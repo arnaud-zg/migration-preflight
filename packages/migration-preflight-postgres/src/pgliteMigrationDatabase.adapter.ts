@@ -1,46 +1,30 @@
-import type { MigrationDatabase, SqlRow, SqlValue } from "migration-preflight";
+import type { MigrationDatabase, SqlRow } from "migration-preflight";
 import { PGlite } from "@electric-sql/pglite";
 
-/** The subset of PGlite's API shared by the top-level client and a transaction handle. */
-type Executor = {
-  query: <T = SqlRow>(sql: string, params?: unknown[]) => Promise<{ rows: T[] }>;
-};
+/** What the client and a transaction handle share: the one call this adapter makes. */
+type Executor = Pick<PGlite, "query">;
 
 /**
- * A MigrationDatabase backed by PGlite — an in-memory WASM Postgres, so tests
- * need no Docker / external server. Runs migrations through the same
- * MigrationChain stepwise replay as the SQLite adapter, but:
- *   • dialect.placeholder renders "$1", "$2", … (Postgres bound parameters).
- *   • foreignKeyViolations always returns [] — Postgres enforces foreign keys
- *     immediately at write time, so a violation surfaces as a thrown error
- *     from run()/transaction() rather than a deferred check query.
- *
- * `run`/`query` are routed through whichever executor (the client or an
- * active transaction handle) is current, so statements issued while inside
- * `transaction()` actually run on that transaction instead of racing it.
- *
- * Pass `client` when migrations need a Postgres extension PGlite doesn't
- * enable by default (e.g. `CREATE EXTENSION pg_trgm` needs
- * `new PGlite({ extensions: { pg_trgm } })` from `@electric-sql/pglite/contrib/pg_trgm`).
- * Without one, a bare in-memory PGlite is created for you.
+ * A MigrationDatabase on PGlite, an in-memory WASM Postgres: no Docker, no server. Placeholders are
+ * `$1`, `$2`, … and `foreignKeyViolations` is always `[]`, since Postgres rejects a violation on
+ * write. Pass a `client` to load an extension (`new PGlite({ extensions: { pg_trgm } })`).
  */
 export const createPgliteMigrationDatabase = (client: PGlite = new PGlite()): MigrationDatabase => {
+  // Inside `transaction`, statements go to its handle, not the client, so they run in it.
   let executor: Executor = client;
-
-  const toParams = (parameters: readonly SqlValue[]): unknown[] => [...parameters];
 
   return {
     dialect: { placeholder: (index) => `$${index + 1}` },
     run: async (sql, parameters = []) => {
-      await executor.query(sql, toParams(parameters));
+      await executor.query(sql, [...parameters]);
     },
     query: async (sql, parameters = []) => {
-      const result = await executor.query<SqlRow>(sql, toParams(parameters));
+      const result = await executor.query<SqlRow>(sql, [...parameters]);
       return result.rows;
     },
     transaction: async (work) => {
-      await client.transaction(async (tx) => {
-        executor = tx;
+      await client.transaction(async (transaction) => {
+        executor = transaction;
         try {
           await work();
         } finally {
