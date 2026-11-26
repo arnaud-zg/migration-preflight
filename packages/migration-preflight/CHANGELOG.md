@@ -1,5 +1,17 @@
 # migration-preflight
 
+## 0.2.2
+
+### Patch Changes
+
+- [#39](https://github.com/arnaud-zg/migration-preflight/pull/39) [`1eb7ede`](https://github.com/arnaud-zg/migration-preflight/commit/1eb7ede9f80574902aadf0ed2bcdfcbf8ae13ec6) - The README links point to the new docs pages, its first example has every import it needs, and the
+  npm keywords are trimmed to the seven that people search for.
+
+- [#31](https://github.com/arnaud-zg/migration-preflight/pull/31) [`a707162`](https://github.com/arnaud-zg/migration-preflight/commit/a7071629b79a67492b18f22fb350de5e6dd06212) - Smaller install: the published build is minified, with source maps and the same exports.
+
+- [#35](https://github.com/arnaud-zg/migration-preflight/pull/35) [`afd13b9`](https://github.com/arnaud-zg/migration-preflight/commit/afd13b9a4cc0b78091ed89a87d9111288c9bbe68) - `hasRow` and `getRow` now escape a double quote inside a table or column name, and a malformed
+  Drizzle `meta/_journal.json` fails with an error naming the file instead of a `TypeError`.
+
 ## 0.2.1
 
 ### Patch Changes
