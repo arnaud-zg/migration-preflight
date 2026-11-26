@@ -3,15 +3,13 @@
   "version": "0.3.1",
   "description": "PGlite (in-memory WASM Postgres) driver for migration-preflight: test your Postgres migrations with no Docker, no external server.",
   "keywords": [
-    "migration",
     "database",
+    "migration",
+    "testing",
     "postgres",
     "postgresql",
     "pglite",
-    "testing",
-    "preflight",
-    "drizzle",
-    "data-safety"
+    "drizzle"
   ],
   "homepage": "https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-postgres#readme",
   "bugs": {

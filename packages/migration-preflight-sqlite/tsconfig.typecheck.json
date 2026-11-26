@@ -7,9 +7,12 @@
     "lib": ["ES2022", "dom"],
     "types": ["node"],
     "paths": {
-      "migration-preflight": ["../migration-preflight/src"]
+      "migration-preflight": ["../migration-preflight/src"],
+      "migration-preflight/sources": ["../migration-preflight/src/sources.ts"],
+      "@migration-preflight/sqlite": ["./src/index.ts"],
+      "@migration-preflight/sqlite/drizzle": ["./src/drizzle.ts"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "examples/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "vitest.config.ts"]
 }

@@ -27,16 +27,20 @@ git checkout -b fix/short-description
 pnpm --filter <pkg> test   # tests for one package
 ```
 
-Add a test for a fix or a feature, and update `docs/` when users will see the change.
+Add a test for a fix or a feature. When users will see the change, update the package README and the
+[docs](./docs/README.md); an example the docs show lives in the package's `examples/`, run by its
+`src/examples.integration.test.ts`.
 
-**3. Add a changeset for any change to a package's `src`**
+**3. Add a changeset for any change npm users will get**
 
 ```sh
 pnpm changeset --patch <pkg> -m "What now works."        # fix, perf, refactor
 pnpm changeset --minor <pkg> -m "What users can now do."  # feat, or a breaking change below 1.0.0
 ```
 
-Docs-only and tooling changes outside a package need none.
+A change to a package README, or to `description` or `keywords` in its `package.json`, is a
+`--patch` too: npm only shows them after a release. Changes to `docs/`, examples and tooling need
+none. Every case: [Changeset rules](./docs/contributing/reference.md#changeset-rules).
 
 **4. Check, commit and push**
 
@@ -59,5 +63,9 @@ gh pr create
 - Say what changes and why, and link the issue (`Closes #123`).
 - Run `pnpm verify` before asking for a review: no CI runs it on pull requests.
 
-The maintainer reviews it, squash-merges it, and
-[releases it](./docs/how-to.md#release-a-new-version) later.
+The maintainer reviews it and squash-merges it.
+
+## Release (maintainer)
+
+Releasing, publishing from GitHub Actions and deprecating a package on npm:
+[Contributing how-to](./docs/contributing/how-to.md).
