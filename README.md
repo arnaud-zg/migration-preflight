@@ -101,11 +101,11 @@ full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten ca
 
 ## 📦 Packages
 
-| Package                                                                    | What it's for                 |
-| -------------------------------------------------------------------------- | ----------------------------- |
-| [`migration-preflight`](./packages/migration-preflight)                    | Core: replay engine, ports    |
-| [`@migration-preflight/sqlite`](./packages/migration-preflight-sqlite)     | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/postgres`](./packages/migration-preflight-postgres) | Postgres driver (PGlite)      |
+| Package                                                                              | What it's for                 |
+| ------------------------------------------------------------------------------------ | ----------------------------- |
+| [`migration-preflight`](./packages/migration-preflight/README.md)                    | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](./packages/migration-preflight-sqlite/README.md)     | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/postgres`](./packages/migration-preflight-postgres/README.md) | Postgres driver (PGlite)      |
 
 No database driver or ORM dependency in the core. Add only the adapter you actually test against.
 Ships with Drizzle, Prisma, and plain-SQL-file sources; anything else plugs in through a custom
@@ -126,8 +126,8 @@ pnpm install
 pnpm verify
 ```
 
-Released independently per package with [Changesets](https://github.com/changesets/changesets); see
-[How-to § Release a new version](./docs/how-to.md#release-a-new-version).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) to report an issue or open a pull request, and
+[How-to § Release a new version](./docs/how-to.md#release-a-new-version) to ship one.
 
 ## License
 

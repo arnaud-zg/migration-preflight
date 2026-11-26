@@ -1,0 +1,17 @@
+name: "@migration-preflight/sqlite"
+description: "SQLite: the node:sqlite database and the drizzle better-sqlite3 runner."
+labels: ["pkg: @migration-preflight/sqlite"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, or what do you want?
+      description: A bug, an idea or a question. One sentence is enough to start.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: Optional. A migration, a test, versions (`node -v`, the package's version).
+      render: shell
