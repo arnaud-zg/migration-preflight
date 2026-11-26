@@ -18,6 +18,8 @@ export const sharedClient = new PGlite({
 await sharedClient.query("select 1");
 
 export const resetSchema = async (): Promise<void> => {
+  // drizzle's migrator records what it applied here, and would skip a later fixture otherwise.
+  await sharedClient.query("DROP SCHEMA IF EXISTS drizzle CASCADE");
   await sharedClient.query("DROP SCHEMA public CASCADE");
   await sharedClient.query("CREATE SCHEMA public");
 };

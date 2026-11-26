@@ -21,6 +21,9 @@ describe("sqlFileSource", () => {
   });
 
   it("ignores non-.sql files", () => {
-    expect(migrations.some((migration) => migration.tag === "notes")).toBe(false);
+    expect(migrations.map((migration) => migration.tag)).toEqual([
+      "0000_create_a",
+      "0001_create_b",
+    ]);
   });
 });

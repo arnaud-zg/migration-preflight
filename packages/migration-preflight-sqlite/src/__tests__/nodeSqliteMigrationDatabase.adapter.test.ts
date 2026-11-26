@@ -10,6 +10,24 @@ describe("nodeSqliteMigrationDatabase adapter", () => {
     expect(await db.query("SELECT id FROM t WHERE id = ?", ["x"])).toEqual([{ id: "x" }]);
   });
 
+  it("keeps the rows a transaction wrote when work succeeds", async () => {
+    const db = createNodeSqliteMigrationDatabase();
+    await db.run("CREATE TABLE t (id text)");
+
+    await db.transaction(async () => {
+      await db.run("INSERT INTO t (id) VALUES ('x')");
+    });
+
+    expect(await db.query("SELECT id FROM t")).toEqual([{ id: "x" }]);
+  });
+
+  it("accepts double-quoted string literals, like an on-device SQLite build", async () => {
+    const db = createNodeSqliteMigrationDatabase();
+    await db.run("CREATE TABLE t (id text)");
+    await db.run('INSERT INTO t (id) VALUES ("x")');
+    expect(await db.query("SELECT id FROM t")).toEqual([{ id: "x" }]);
+  });
+
   it("rolls back the transaction when work throws", async () => {
     const db = createNodeSqliteMigrationDatabase();
     await db.run("CREATE TABLE t (id text)");
@@ -38,7 +56,9 @@ describe("nodeSqliteMigrationDatabase adapter", () => {
     await db.run("CREATE TABLE child (id text, parent_id text REFERENCES parent(id))");
     await db.run("INSERT INTO child (id, parent_id) VALUES ('c', 'missing')");
 
-    expect(await db.foreignKeyViolations()).not.toEqual([]);
+    expect(await db.foreignKeyViolations()).toEqual([
+      expect.objectContaining({ table: "child", parent: "parent" }),
+    ]);
   });
 
   it("renders the sqlite '?' placeholder", () => {

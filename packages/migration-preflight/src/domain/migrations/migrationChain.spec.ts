@@ -9,7 +9,10 @@ class RecordingDatabase implements MigrationDatabase {
   readonly dialect = { placeholder: () => "?" };
   readonly ranInTransaction: string[] = [];
   readonly queriesRun: { sql: string; params: readonly unknown[] }[] = [];
+  readonly violations: SqlRow[] = [];
   private inTransaction = false;
+
+  constructor(private readonly rows: SqlRow[] = []) {}
 
   run(sql: string): void {
     if (this.inTransaction) this.ranInTransaction.push(sql);
@@ -17,7 +20,7 @@ class RecordingDatabase implements MigrationDatabase {
 
   query(sql: string, params: readonly unknown[] = []): SqlRow[] {
     this.queriesRun.push({ sql, params });
-    return [];
+    return this.rows;
   }
 
   async transaction(work: () => Promise<void> | void): Promise<void> {
@@ -27,7 +30,7 @@ class RecordingDatabase implements MigrationDatabase {
   }
 
   foreignKeyViolations(): SqlRow[] {
-    return [];
+    return this.violations;
   }
 }
 
@@ -115,6 +118,20 @@ describe("MigrationChain.applyAll", () => {
 });
 
 describe("MigrationChain.hasRow / getRow", () => {
+  it("finds a row the database returns", async () => {
+    const chain = new MigrationChain(new RecordingDatabase([{ id: "u1", email: "a@b.com" }]), []);
+
+    expect(await chain.hasRow("users", "u1")).toBe(true);
+    expect(await chain.getRow("users", "u1")).toEqual({ id: "u1", email: "a@b.com" });
+  });
+
+  it("finds nothing when the database returns no row", async () => {
+    const chain = new MigrationChain(new RecordingDatabase(), []);
+
+    expect(await chain.hasRow("users", "u1")).toBe(false);
+    expect(await chain.getRow("users", "u1")).toBeUndefined();
+  });
+
   it("queries by the id column by default", async () => {
     const database = new RecordingDatabase();
     const chain = new MigrationChain(database, []);
@@ -159,6 +176,23 @@ describe("MigrationChain.hasRow / getRow", () => {
 
     expect(database.queriesRun).toEqual([
       { sql: 'SELECT "id" FROM "user" WHERE "id" = ?', params: ["u1"] },
+    ]);
+  });
+});
+
+describe("MigrationChain.ordered / foreignKeyViolations", () => {
+  it("lists the migrations in the order given, to drive one test case per migration", () => {
+    const migrations = [migration(0, "CREATE TABLE a (id text);"), migration(1, "SELECT 1;")];
+
+    expect(new MigrationChain(new RecordingDatabase(), migrations).ordered()).toEqual(migrations);
+  });
+
+  it("reports the foreign key violations the database finds", async () => {
+    const database = new RecordingDatabase();
+    database.violations.push({ table: "child", parent: "parent" });
+
+    expect(await new MigrationChain(database, []).foreignKeyViolations()).toEqual([
+      { table: "child", parent: "parent" },
     ]);
   });
 });

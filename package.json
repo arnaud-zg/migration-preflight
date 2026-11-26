@@ -15,6 +15,7 @@
     "release": "pnpm build && shiplane",
     "shiplane": "shiplane",
     "test": "pnpm -r run test",
+    "test:mutate": "pnpm -r --workspace-concurrency=1 run test:mutate",
     "typecheck": "pnpm -r run typecheck",
     "verify": "pnpm typecheck && pnpm lint && pnpm lint:md && pnpm format:check && pnpm test && pnpm build"
   },
@@ -31,6 +32,8 @@
     "@shiplane/git": "catalog:",
     "@shiplane/github": "catalog:",
     "@shiplane/npm": "catalog:",
+    "@stryker-mutator/core": "catalog:",
+    "@stryker-mutator/vitest-runner": "catalog:",
     "@types/node": "catalog:node",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
