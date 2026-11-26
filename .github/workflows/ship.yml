@@ -1,0 +1,55 @@
+# Publishes the tagged packages to npm. shiplane dispatches it (`pnpm release`), or Run workflow here.
+# Signed in by npm trusted publishing: no secret. Set up: docs/how-to.md#release-a-new-version
+name: Ship
+run-name: Ship ${{ inputs.units || 'every pending package' }} to ${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      units:
+        description: "Packages to publish, space separated (empty: every pending one)"
+        type: string
+        default: ""
+      environment:
+        description: "preview publishes the tagged versions, production promotes them"
+        type: choice
+        options: [preview, production]
+        default: preview
+
+permissions:
+  contents: write # the GitHub Releases
+  id-token: write # npm trusted publishing
+  issues: write # shiplane tells each released PR
+  pull-requests: write
+  deployments: write
+
+jobs:
+  ship:
+    name: Ship to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: ship-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      # Tags and history: a release reads which commit each version came from.
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Node 22 ships npm 10: OIDC publishes from npm 11.5.1.
+      - run: npm install --global npm@^11.21.0
+      - name: Ship
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UNITS: ${{ inputs.units }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # shellcheck disable=SC2086 # one word per unit
+          pnpm exec shiplane ship $UNITS --channel "$ENVIRONMENT" --yes --no-mascot

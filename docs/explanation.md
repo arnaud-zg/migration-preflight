@@ -72,21 +72,6 @@ guards against a future one declared with a plain semver range getting silently 
 three packages start at `0.1.0`: usable, not yet stable, expect breaking changes signaled by a `0.x`
 minor bump until `1.0.0`.
 
-## Why release notes are a separate, idempotent script
-
-`changeset publish` already creates a `<package>@<version>` git tag per bumped package, and
-per-package `CHANGELOG.md` is already generated, so a GitHub Release is just those two facts glued
-together instead of hand-written: `scripts/release-notes.mjs` walks every package, and for any tag
-that doesn't have a release yet, creates one titled after the tag with that package's `## <version>`
-CHANGELOG.md section as its notes.
-
-It runs after `pnpm release` and `git push --follow-tags`, not folded into either, because a git tag
-isn't a GitHub Release: `gh release create <tag>` needs the tag to already exist on the remote, and
-creating it against a local-only tag would tag the wrong commit (the branch tip, not the real
-release commit). Checking "does a release already exist" instead of "was this tag just created" also
-makes the script idempotent: re-running it after a partial failure, or once against tags that
-predate the script, only fills in what's missing.
-
 ## Why the tsconfig split (`tsconfig.json` / `.build.json` / `.typecheck.json`)
 
 - **`tsconfig.json`**: what editors and ESLint's typed linting resolve. Extends

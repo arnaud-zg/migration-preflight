@@ -7,13 +7,17 @@ import tseslint from "typescript-eslint";
  * `projectService` auto-discovery) is what reliably resolves each file to its owning package's
  * project when a single `eslint .` invocation from the repo root lints all packages at once.
  */
-export default tseslint.config({ ignores: [".claude/worktrees/**"] }, ...base, {
-  files: ["**/*.{ts,tsx}"],
-  ignores: ["**/dist/**"],
-  languageOptions: {
-    parserOptions: {
-      project: ["packages/*/tsconfig.json"],
-      tsconfigRootDir: import.meta.dirname,
+export default tseslint.config(
+  { ignores: ["shiplane.config.ts", ".claude/worktrees/**"] },
+  ...base,
+  {
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["**/dist/**"],
+    languageOptions: {
+      parserOptions: {
+        project: ["packages/*/tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
-});
+);
