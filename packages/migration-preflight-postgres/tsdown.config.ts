@@ -1,4 +1,4 @@
-import { defineLibraryConfig } from "@arnaud-zg/configs/tsdown";
+import { defineLibraryConfig } from "../../tsdown.library.mjs";
 
 // Two entry points: root (the raw PGlite adapter) and ./drizzle (the drizzle-native migrator
 // runner) — kept separate so importing the raw adapter never requires drizzle-orm. See README.

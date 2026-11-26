@@ -131,7 +131,7 @@ _`@migration-preflight/postgres` isn't linked above: that's this package._
 ## Contributing
 
 ```bash
-pnpm --filter @migration-preflight/postgres test:db        # run the test suite
+pnpm --filter @migration-preflight/postgres test        # run the test suite
 pnpm --filter @migration-preflight/postgres typecheck      # type-check
 pnpm --filter @migration-preflight/postgres lint           # eslint
 ```

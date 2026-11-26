@@ -145,7 +145,7 @@ resolve to.
 | `pnpm lint:md`                 | `remark . --frail --quiet`                                                         |
 | `pnpm format` / `format:check` | `prettier --write .` / `prettier --check .`                                        |
 | `pnpm typecheck`               | `tsc -p tsconfig.typecheck.json` in every package                                  |
-| `pnpm test`                    | `vitest run` in every package, including the Postgres adapter's `test:db`          |
+| `pnpm test`                    | `vitest run` in every package                                                      |
 | `pnpm build`                   | `tsdown` in every package                                                          |
 | `pnpm verify`                  | typecheck, lint, lint:md, format:check, test, build                                |
 | `pnpm changeset`               | records a pending version bump, see [How-to](./how-to.md#release-a-new-version)    |

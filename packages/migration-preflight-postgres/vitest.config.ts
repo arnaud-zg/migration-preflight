@@ -1,6 +1,16 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  // The tests import the core by its npm name; run it from src, so a fresh clone needs no build.
+  resolve: {
+    alias: [
+      {
+        find: /^migration-preflight$/,
+        replacement: fileURLToPath(new URL("../migration-preflight/src/index.ts", import.meta.url)),
+      },
+    ],
+  },
   test: {
     environment: "node",
     watch: false,
