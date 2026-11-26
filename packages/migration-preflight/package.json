@@ -39,7 +39,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "clean": "git clean -xdf .cache dist node_modules",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
     "format": "prettier --write . --ignore-path ../../.prettierignore --cache --cache-location .cache/.prettiercache",
     "lint": "eslint --cache --cache-location .cache/.eslintcache",
     "prepublishOnly": "pnpm run build",

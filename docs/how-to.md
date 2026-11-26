@@ -173,7 +173,7 @@ Or scope to one package:
 ```sh
 pnpm --filter migration-preflight test
 pnpm --filter @migration-preflight/sqlite test
-pnpm --filter @migration-preflight/postgres test:db
+pnpm --filter @migration-preflight/postgres test
 ```
 
 Known issue: running the Postgres adapter's tests alongside other heavy suites can still push CI

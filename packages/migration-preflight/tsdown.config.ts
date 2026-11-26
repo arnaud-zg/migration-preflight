@@ -1,4 +1,4 @@
-import { defineLibraryConfig } from "@arnaud-zg/configs/tsdown";
+import { defineLibraryConfig } from "../../tsdown.library.mjs";
 
 // Two entry points: root (the preflight runner) and ./sources — see README for which one to
 // import from.
