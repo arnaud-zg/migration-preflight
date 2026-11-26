@@ -2,14 +2,9 @@ import type { MigrationDatabase } from "migration-preflight";
 import { DatabaseSync } from "node:sqlite";
 
 /**
- * A MigrationDatabase backed by node:sqlite, configured to match how an on-device SQLite
- * driver such as expo-sqlite typically runs, so migration behaviour is faithful:
- *   • enableForeignKeyConstraints — mirrors an app running with PRAGMA foreign_keys = ON,
- *     which can't be turned off from inside the migrator's own transaction.
- *   • enableDoubleQuotedStringLiterals — some SQLite builds on device allow SQLite's
- *     legacy double-quoted string literals (some generated migrations rely on it).
- *
- * This is test-only infrastructure. Zero runtime dependencies.
+ * A MigrationDatabase on an in-memory node:sqlite database, set up like an on-device SQLite driver
+ * (expo-sqlite): foreign keys on, and double-quoted string literals allowed, which some generated
+ * migrations rely on. Test-only, zero runtime dependencies.
  */
 export const createNodeSqliteMigrationDatabase = (): MigrationDatabase => {
   const database = new DatabaseSync(":memory:", {
@@ -24,12 +19,12 @@ export const createNodeSqliteMigrationDatabase = (): MigrationDatabase => {
     },
     query: (sql, parameters = []) => database.prepare(sql).all(...parameters),
     transaction: async (work) => {
-      database.prepare("BEGIN").run();
+      database.exec("BEGIN");
       try {
         await work();
-        database.prepare("COMMIT").run();
+        database.exec("COMMIT");
       } catch (error) {
-        database.prepare("ROLLBACK").run();
+        database.exec("ROLLBACK");
         throw error;
       }
     },
