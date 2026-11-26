@@ -214,14 +214,31 @@ pnpm release
 ```
 
 The same command now tags each bumped package, writes its GitHub Release from the `CHANGELOG.md`
-entry, then publishes to npm through the [Ship workflow](../.github/workflows/ship.yml) (or this
-machine: it asks, `--via github` skips the question). `pnpm shiplane plan` prints every command a
-ship would run, and runs none.
+entry, then publishes to npm. It asks where: GitHub Actions or this machine. `pnpm shiplane status`
+shows what is pending at any time.
+
+**Publish from GitHub Actions**
+
+GitHub Actions runs [`ship.yml`](../.github/workflows/ship.yml), written by `shiplane doctor`. Start
+it yourself, with **dry-run** to only look:
+
+```sh
+gh workflow run ship.yml --ref main -f environment=nightly -f dry-run=true
+```
+
+| Environment                      | Branch | npm gets                                       |
+| -------------------------------- | ------ | ---------------------------------------------- |
+| `snapshot`                       | any    | `<next>-<branch>.<sha>`, no tag kept           |
+| `nightly`, `alpha`, `beta`, `rc` | `main` | `<next>-<channel>.<n>` under that tag          |
+| `latest`                         | `main` | the merged release PR's version under `latest` |
+
+After a shiplane upgrade, run `pnpm shiplane doctor`: it moves the pin in `ship.yml`.
 
 **One-time setup**
 
 - **Settings → Branches**: require a PR before merging into `main`.
-- **npm trusted publishing**, per package, so the workflow publishes with no token:
+- **npm trusted publishing**, per package, from your own terminal (npm asks for 2FA), so the
+  workflow publishes with no token:
 
   ```sh
   for p in migration-preflight @migration-preflight/sqlite @migration-preflight/postgres; do

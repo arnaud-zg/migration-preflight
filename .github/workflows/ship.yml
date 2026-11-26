@@ -1,55 +1,55 @@
-# Publishes the tagged packages to npm. shiplane dispatches it (`pnpm release`), or Run workflow here.
-# Signed in by npm trusted publishing: no secret. Set up: docs/how-to.md#release-a-new-version
+# Ships with shiplane: `pnpm shiplane ship --via ci`, or Run workflow here.
+# Written by `shiplane setup`; `shiplane doctor` keeps the pin current.
 name: Ship
-run-name: Ship ${{ inputs.units || 'every pending package' }} to ${{ inputs.environment }}
+run-name: Ship to ${{ inputs.environment }}${{ inputs.dry-run && ' (dry run)' || '' }}
 
 on:
   workflow_dispatch:
     inputs:
       units:
-        description: "Packages to publish, space separated (empty: every pending one)"
+        description: "Units to ship, space separated (empty: every unit the environment lacks)"
         type: string
         default: ""
       environment:
-        description: "preview publishes the tagged versions, production promotes them"
+        description: "Where to ship the ref this runs on"
         type: choice
-        options: [preview, production]
-        default: preview
+        options: [snapshot, nightly, alpha, beta, rc, latest]
+        default: snapshot
+      ref:
+        description: "The tag to ship; shiplane sets it (empty: the ref this runs on)"
+        type: string
+        default: ""
+      dry-run:
+        description: "Show what would ship, ship nothing"
+        type: boolean
+        default: false
 
 permissions:
-  contents: write # the GitHub Releases
-  id-token: write # npm trusted publishing
-  issues: write # shiplane tells each released PR
-  pull-requests: write
+  contents: write
   deployments: write
+  actions: read
+  id-token: write
+  issues: write
+  pull-requests: write
 
 jobs:
   ship:
     name: Ship to ${{ inputs.environment }}
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-26.04
+    # A dry run reads the environment's secrets and records no deployment.
+    environment:
+      name: ${{ inputs.environment }}
+      deployment: ${{ !inputs.dry-run }}
     concurrency:
       group: ship-${{ inputs.environment }}
       cancel-in-progress: false
     steps:
-      # Tags and history: a release reads which commit each version came from.
       - uses: actions/checkout@v5
-        with: { fetch-depth: 0 }
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      # Node 22 ships npm 10: OIDC publishes from npm 11.5.1.
-      - run: npm install --global npm@^11.21.0
-      - name: Ship
-        env:
-          GH_TOKEN: ${{ github.token }}
-          UNITS: ${{ inputs.units }}
-          ENVIRONMENT: ${{ inputs.environment }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # shellcheck disable=SC2086 # one word per unit
-          pnpm exec shiplane ship $UNITS --channel "$ENVIRONMENT" --yes --no-mascot
+          ref: ${{ contains(fromJSON('[]'), inputs.environment) && inputs.ref || '' }}
+          fetch-depth: 0
+      - uses: arnaud-zg/js-packages/.github/actions/ship@70a8bd6176f01b46dfca1c10a84ecb7e1e80ebed # shiplane@0.6.0-nightly.18
+        with:
+          units: ${{ inputs.units }}
+          environment: ${{ inputs.environment }}
+          dry-run: ${{ inputs.dry-run }}
