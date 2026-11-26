@@ -1,4 +1,4 @@
-export { MigrationChain } from "./domain/migrations/migrationChain";
+export { MigrationChain } from "./migrationChain";
 export type {
   Migration,
   MigrationDatabase,
@@ -6,5 +6,5 @@ export type {
   SqlRow,
   SqlStatement,
   SqlValue,
-} from "./domain/migrations/migrationChain.ports";
-export { renderInsert, splitIntoStatements } from "./domain/migrations/migrationSql";
+} from "./migrationChain.ports";
+export { renderInsert, splitIntoStatements } from "./migrationSql";

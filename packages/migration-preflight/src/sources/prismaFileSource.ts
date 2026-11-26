@@ -1,21 +1,17 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { join } from "node:path";
 
-import type { Migration } from "../domain/migrations/migrationChain.ports";
 import type { MigrationSource } from "./migrationSource.port";
+import { readMigrations } from "./readMigrations";
 
 /**
- * `MigrationSource` for a Prisma `prisma/migrations/` directory: each
- * `<timestamp>_<name>/migration.sql` folder already sorts into the right
- * order as a plain string, so there's no journal to parse.
+ * `MigrationSource` for a Prisma `prisma/migrations/` directory: each `<timestamp>_<name>/` folder
+ * holds a `migration.sql`, and the folder names sort into the right order.
  */
-export const prismaFileSource: MigrationSource = (migrationsDir) =>
-  readdirSync(migrationsDir, { withFileTypes: true })
+export const prismaFileSource: MigrationSource = (migrationsDir) => {
+  const tags = readdirSync(migrationsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .sort()
-    .map((tag, idx): Migration => ({
-      idx,
-      tag,
-      sql: readFileSync(join(migrationsDir, tag, "migration.sql"), "utf8"),
-    }));
+    .sort();
+  return readMigrations(tags, (tag) => join(migrationsDir, tag, "migration.sql"));
+};

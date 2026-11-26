@@ -123,8 +123,8 @@ you.
 ```
 packages/
   migration-preflight/                       core: replay engine + ports (zero runtime deps)
-    src/domain/migrations/                    MigrationChain, ports, migrationSql
-    src/sources/                              drizzleFileSource (the "./sources" entry point)
+    src/                                      MigrationChain, its ports, migrationSql
+    src/sources/                              the file sources (the "./sources" entry point)
   migration-preflight-sqlite/        node:sqlite adapter
     src/nodeSqliteMigrationDatabase.adapter.ts  the raw MigrationDatabase adapter
     src/drizzleBetterSqliteRunner.ts            the "./drizzle" apply-clean runner
