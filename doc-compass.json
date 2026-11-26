@@ -1,1 +1,15 @@
-{ "docs": [{ "folder": "docs", "index": "../README.md" }] }
+{
+  "ban": ["—"],
+  "docs": [
+    {
+      "folder": "docs/migration-preflight",
+      "index": "../README.md",
+      "examples": "packages/migration-preflight-sqlite/examples"
+    },
+    {
+      "folder": "docs/contributing",
+      "index": "../README.md",
+      "examples": "packages/migration-preflight-sqlite/examples"
+    }
+  ]
+}

@@ -74,6 +74,7 @@ pnpm add -D migration-preflight @migration-preflight/sqlite
 ```
 
 ```ts
+import { join } from "node:path";
 import type { SqlStatement } from "migration-preflight";
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite"; // or -postgres
 import { MigrationChain, renderInsert } from "migration-preflight";
@@ -95,9 +96,9 @@ await chain.applyAll((migration) => seedsByTag.get(migration.tag) ?? []);
 await chain.hasRow("users", "u1"); // true, the row survived the whole history
 ```
 
-See the [Tutorial](./docs/tutorial.md) to walk through this step by step, or
-[How-to § Seed a row between migrations](./docs/how-to.md#seed-a-row-between-migrations) for the
-full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten callback.
+See the [Tutorial](./docs/migration-preflight/tutorial.md) to walk through this step by step, or
+[How-to § Seed a row between migrations](./docs/migration-preflight/how-to.md#seed-many-rows-and-check-each-one)
+for the full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten callback.
 
 ## 📦 Packages
 
@@ -110,14 +111,17 @@ full recipe. Seeding more rows is another `seedsByTag` entry, not a rewritten ca
 No database driver or ORM dependency in the core. Add only the adapter you actually test against.
 Ships with Drizzle, Prisma, and plain-SQL-file sources; anything else plugs in through a custom
 `MigrationSource`, see
-[How-to § Add a custom `MigrationSource`](./docs/how-to.md#add-a-custom-migrationsource).
+[How-to § Add a custom `MigrationSource`](./docs/migration-preflight/how-to.md#read-another-migration-format).
 
 ## 📚 Documentation
 
-- 🚀 **[Tutorial](./docs/tutorial.md)**: seed a row, run a migration, prove it survives.
-- 🛠️ **[How-to guides](./docs/how-to.md)**: task recipes.
-- 📖 **[Reference](./docs/reference.md)**: API and package layout.
-- 💡 **[Explanation](./docs/explanation.md)**: design rationale.
+- 🚀 **[Tutorial](./docs/migration-preflight/tutorial.md)**: seed a row, run a migration, prove it
+  survives.
+- 🛠️ **[How-to guides](./docs/migration-preflight/how-to.md)**: task recipes.
+- 📖 **[Reference](./docs/migration-preflight/reference.md)**: every export and signature.
+- 💡 **[Explanation](./docs/migration-preflight/explanation.md)**: design rationale.
+
+Every page, and which package you need: [📚 Docs](./docs/README.md).
 
 ## 🤝 Contributing
 
@@ -127,7 +131,7 @@ pnpm verify
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to report an issue or open a pull request, and
-[How-to § Release a new version](./docs/how-to.md#release-a-new-version) to ship one.
+[How-to § Release a new version](./docs/contributing/how-to.md#release-a-new-version) to ship one.
 
 ## License
 

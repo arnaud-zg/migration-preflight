@@ -55,6 +55,7 @@ pnpm add -D migration-preflight @migration-preflight/sqlite
 ```
 
 ```ts
+import { join } from "node:path";
 import { createNodeSqliteMigrationDatabase } from "@migration-preflight/sqlite"; // or -postgres
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource } from "migration-preflight/sources"; // or prismaFileSource, sqlFileSource
@@ -73,11 +74,11 @@ migrations. See [Seeding between migrations](#seeding-between-migrations) below.
 This package is the dialect-agnostic core: the replay engine and the ports it runs against. No
 database driver, no ORM dependency.
 
-| Package                                                                                                                             | What it's for                 |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `migration-preflight`                                                                                                               | Core: replay engine, ports    |
-| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-sqlite)     | SQLite driver (`node:sqlite`) |
-| [`@migration-preflight/postgres`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-postgres) | Postgres driver (PGlite)      |
+| Package                                                                                                                                       | What it's for                 |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `migration-preflight`                                                                                                                         | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/blob/main/packages/migration-preflight-sqlite/README.md)     | SQLite driver (`node:sqlite`) |
+| [`@migration-preflight/postgres`](https://github.com/arnaud-zg/migration-preflight/blob/main/packages/migration-preflight-postgres/README.md) | Postgres driver (PGlite)      |
 
 _`migration-preflight` isn't linked above: that's this package._
 
@@ -106,7 +107,7 @@ expect(await chain.foreignKeyViolations()).toEqual([]);
 ```
 
 Seeding more rows is another `seedsByTag` entry, not a rewritten callback. See
-[How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#seed-a-row-between-migrations)
+[How-to § Seed a row between migrations](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md#seed-many-rows-and-check-each-one)
 for the full recipe, including a primary key column other than `id`.
 
 ## Integrating with Drizzle, Prisma, plain SQL, and Postgres
@@ -124,14 +125,17 @@ ports. Concrete support comes from two other packages, plus three bundled source
 
 ## 📚 Documentation
 
-- 🚀 **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/tutorial.md)**:
+- 🚀
+  **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/tutorial.md)**:
   seed a row, run a migration, prove it survives.
-- 🛠️ **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md)**:
+- 🛠️
+  **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md)**:
   task recipes.
-- 📖 **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/reference.md)**:
-  API and package layout.
+- 📖
+  **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/reference.md)**:
+  every export and signature.
 - 💡
-  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md)**:
+  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/explanation.md)**:
   design rationale.
 
 ## Contributing

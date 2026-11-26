@@ -11,12 +11,15 @@
    * declarations itself, that's tsconfig.build.json's job.
    */
   "files": [],
-  "include": ["src/**/*.ts", "*.config.ts"],
+  "include": ["src/**/*.ts", "examples/**/*.ts", "*.config.ts"],
   "extends": ["@arnaud-zg/configs/tsconfig/base.json", "../../tsconfig.base.json"],
   "compilerOptions": {
     "types": ["node"],
     "paths": {
-      "migration-preflight": ["../migration-preflight/src/index.ts"]
+      "migration-preflight": ["../migration-preflight/src/index.ts"],
+      "migration-preflight/sources": ["../migration-preflight/src/sources.ts"],
+      "@migration-preflight/postgres": ["./src/index.ts"],
+      "@migration-preflight/postgres/drizzle": ["./src/drizzle.ts"]
     }
   }
 }

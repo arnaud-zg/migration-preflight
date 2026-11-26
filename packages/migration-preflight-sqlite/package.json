@@ -3,12 +3,11 @@
   "version": "0.3.1",
   "description": "node:sqlite driver for migration-preflight: test your SQLite migrations with zero runtime dependencies.",
   "keywords": [
-    "migration",
     "database",
+    "migration",
+    "testing",
     "sqlite",
     "node-sqlite",
-    "testing",
-    "preflight",
     "drizzle",
     "data-safety"
   ],

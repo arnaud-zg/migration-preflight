@@ -27,7 +27,7 @@
 ---
 
 The Postgres driver for
-[`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight).
+[`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/blob/main/packages/migration-preflight/README.md).
 A migration that silently drops or corrupts data usually only fails once it meets real data, and by
 then it already ran. This package is what lets that test run against Postgres.
 
@@ -67,6 +67,7 @@ import { runDrizzlePgliteMigrations } from "@migration-preflight/postgres/drizzl
 Works with any bundled migration source, Drizzle, Prisma, or plain SQL files:
 
 ```ts
+import { join } from "node:path";
 import { createPgliteMigrationDatabase } from "@migration-preflight/postgres";
 import { MigrationChain } from "migration-preflight";
 import { drizzleFileSource, prismaFileSource, sqlFileSource } from "migration-preflight/sources";
@@ -81,51 +82,54 @@ await chain.applyAll();
 ```
 
 See
-[How-to § Pick a migration source](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#pick-a-migration-source)
+[How-to § Pick a migration source](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md#read-prisma-or-plain-sql-migrations)
 for what each folder layout looks like.
 
 ## Foreign keys behave differently here than in SQLite
 
 `foreignKeyViolations()` always returns `[]` on Postgres; a violation surfaces as a thrown error
 from the `run`/`transaction` call that caused it instead. See
-[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md#why-foreignkeyviolations-always-returns--on-postgres)
+[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/explanation.md#postgres-checks-foreign-keys-on-write)
 for why, and
-[How-to § Assert on foreign key integrity](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#assert-on-foreign-key-integrity)
+[How-to § Assert on foreign key integrity](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md#assert-foreign-key-integrity)
 for how to test it.
 
 ## Postgres extensions (e.g. `pg_trgm`)
 
 If a migration runs `CREATE EXTENSION ...`, PGlite needs that extension loaded up front, by building
 the client yourself and passing it in. See
-[How-to § Load Postgres extensions](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md#load-postgres-extensions-eg-pg_trgm)
+[How-to § Load Postgres extensions](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md#load-a-postgres-extension)
 for the recipe.
 
 ## Known issue: high memory use in tests
 
 Each PGlite instance is a full WASM-compiled Postgres, roughly 700MB+ peak RSS on its own. See
-[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md#known-issue-pglite-memory-use-in-tests)
+[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/explanation.md#each-pglite-instance-costs-hundreds-of-megabytes)
 for why, and how this package's own test suite works around it.
 
 ## 📦 Packages
 
-| Package                                                                                                                         | What it's for                 |
-| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight)                | Core: replay engine, ports    |
-| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/tree/main/packages/migration-preflight-sqlite) | SQLite driver (`node:sqlite`) |
-| `@migration-preflight/postgres`                                                                                                 | Postgres driver (PGlite)      |
+| Package                                                                                                                                   | What it's for                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| [`migration-preflight`](https://github.com/arnaud-zg/migration-preflight/blob/main/packages/migration-preflight/README.md)                | Core: replay engine, ports    |
+| [`@migration-preflight/sqlite`](https://github.com/arnaud-zg/migration-preflight/blob/main/packages/migration-preflight-sqlite/README.md) | SQLite driver (`node:sqlite`) |
+| `@migration-preflight/postgres`                                                                                                           | Postgres driver (PGlite)      |
 
 _`@migration-preflight/postgres` isn't linked above: that's this package._
 
 ## 📚 Documentation
 
-- 🚀 **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/tutorial.md)**:
+- 🚀
+  **[Tutorial](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/tutorial.md)**:
   seed a row, run a migration, prove it survives.
-- 🛠️ **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/how-to.md)**:
+- 🛠️
+  **[How-to guides](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/how-to.md)**:
   task recipes.
-- 📖 **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/reference.md)**:
-  API and package layout.
+- 📖
+  **[Reference](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/reference.md)**:
+  every export and signature.
 - 💡
-  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/explanation.md)**:
+  **[Explanation](https://github.com/arnaud-zg/migration-preflight/blob/main/docs/migration-preflight/explanation.md)**:
   design rationale.
 
 ## Contributing
