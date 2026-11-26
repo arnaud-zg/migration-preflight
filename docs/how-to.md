@@ -182,60 +182,53 @@ why.
 
 ## Release a new version
 
-Uses [Changesets](https://github.com/changesets/changesets). Nobody pushes to `main` directly,
-including for version bumps: everything lands through a merged PR.
+Uses [shiplane](https://www.npmjs.com/package/shiplane), with
+[Changesets](https://github.com/changesets/changesets) for the versions. Nobody pushes to `main`
+directly, including for version bumps: everything lands through a merged PR.
 
 **1. Add a changeset, in your feature/fix PR**
 
 ```sh
-pnpm changeset
+pnpm changeset --patch <pkg> -m "What now works."        # fix, perf, refactor
+pnpm changeset --minor <pkg> -m "What users can now do."  # feat
 ```
 
-Each merged PR carries its own changeset; they pile up on `main` until step 2 cuts a release. Commit
-the generated `.changeset/*.md` file and merge the PR as usual.
+Each merged PR carries its own changeset; they pile up on `main` until step 2.
 
-**2. Cut the release PR, once changesets have piled up on `main`**
+**2. Open the release PR, once changesets have piled up on `main`**
 
 ```sh
-git checkout main
-git checkout -b release/$(date +%Y-%m-%d)
-pnpm changeset version && pnpm install
-git commit -am "chore(release): version packages"
-git push -u origin HEAD
-gh pr create --title "chore(release): version packages" --fill
+git checkout main && git pull
+pnpm release
 ```
 
-Copy this into the PR description, filling in the version column from the `package.json` diffs:
+`pnpm release` builds, then runs shiplane. With changesets pending, it opens the release PR:
+versions bumped and `CHANGELOG.md` written by `changeset version`. Review it and merge it.
+`pnpm shiplane status` shows what is pending at any time.
 
-```markdown
-## Releases
-
-| Package                         | Version |
-| ------------------------------- | ------- |
-| `migration-preflight`           | 0.0.0   |
-| `@migration-preflight/sqlite`   | 0.0.0   |
-| `@migration-preflight/postgres` | 0.0.0   |
-```
-
-Review the diff (version bumps + `CHANGELOG.md`) and merge it like any other PR.
-
-**3. Publish, from your machine, after that PR is merged**
+**3. Publish, after that PR is merged**
 
 ```sh
-git checkout main
-npm login          # if you don't already have a session
-pnpm release        # build, then changeset publish (also tags each bumped package)
-git push --follow-tags
-pnpm release:notes  # create a GitHub Release, per package, from that CHANGELOG.md entry
+git checkout main && git pull
+pnpm release
 ```
 
-`pnpm release:notes` needs `gh` authenticated and is safe to re-run: it skips any tag that already
-has a release. See
-[Explanation § Why release notes are a separate, idempotent script](./explanation.md#why-release-notes-are-a-separate-idempotent-script)
-for why.
+The same command now tags each bumped package, writes its GitHub Release from the `CHANGELOG.md`
+entry, then publishes to npm through the [Ship workflow](../.github/workflows/ship.yml) (or this
+machine: it asks, `--via github` skips the question). `pnpm shiplane plan` prints every command a
+ship would run, and runs none.
 
-One-time setup: **Settings → Branches** → require a PR before merging into `main`, so steps 1 and 2
-are the only way in. (Needs the repo to be public, or GitHub Pro, for a private repo.)
+**One-time setup**
+
+- **Settings → Branches**: require a PR before merging into `main`.
+- **npm trusted publishing**, per package, so the workflow publishes with no token:
+
+  ```sh
+  for p in migration-preflight @migration-preflight/sqlite @migration-preflight/postgres; do
+    npx -y npm@^11.21.0 trust github "$p" --file ship.yml \
+      --repo arnaud-zg/migration-preflight --allow-publish -y || echo "FAILED: $p"
+  done
+  ```
 
 See [Explanation § Versioning policy](./explanation.md#versioning-policy) for why packages version
 independently rather than in lockstep.
