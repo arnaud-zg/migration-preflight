@@ -1,4 +1,4 @@
-import type { Migration } from "../domain/migrations/migrationChain.ports";
+import type { Migration } from "../migrationChain.ports";
 
 /**
  * Where an ordered list of migrations comes from, independent of the ORM

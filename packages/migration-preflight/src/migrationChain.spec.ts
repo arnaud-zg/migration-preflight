@@ -139,7 +139,7 @@ describe("MigrationChain.hasRow / getRow", () => {
     await chain.hasRow("users", "u1");
 
     expect(database.queriesRun).toEqual([
-      { sql: 'SELECT "id" FROM "users" WHERE "id" = ?', params: ["u1"] },
+      { sql: 'SELECT * FROM "users" WHERE "id" = ?', params: ["u1"] },
     ]);
   });
 
@@ -151,7 +151,7 @@ describe("MigrationChain.hasRow / getRow", () => {
 
     expect(database.queriesRun).toEqual([
       {
-        sql: 'SELECT "order_id" FROM "order_line_items" WHERE "order_id" = ?',
+        sql: 'SELECT * FROM "order_line_items" WHERE "order_id" = ?',
         params: ["li1"],
       },
     ]);
@@ -175,7 +175,18 @@ describe("MigrationChain.hasRow / getRow", () => {
     await chain.hasRow("user", "u1");
 
     expect(database.queriesRun).toEqual([
-      { sql: 'SELECT "id" FROM "user" WHERE "id" = ?', params: ["u1"] },
+      { sql: 'SELECT * FROM "user" WHERE "id" = ?', params: ["u1"] },
+    ]);
+  });
+
+  it("escapes a double quote inside a name, so it stays one identifier", async () => {
+    const database = new RecordingDatabase();
+    const chain = new MigrationChain(database, []);
+
+    await chain.getRow('odd"table', "u1", 'odd"id');
+
+    expect(database.queriesRun).toEqual([
+      { sql: 'SELECT * FROM "odd""table" WHERE "odd""id" = ?', params: ["u1"] },
     ]);
   });
 });
